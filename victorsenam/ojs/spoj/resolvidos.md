@@ -1,3 +1,5 @@
+OK. EU MEIO QUE DESISTI DE FAZER ISSO...
+
 #Lista dos problemas resolvidos 
 *(não necessáriamente ordenados)*
 
@@ -9,3 +11,7 @@
 - fpolice
 - alien
 - bat3
+- minhoca
+- obihanoi
+- obipoker
+- poslivre
