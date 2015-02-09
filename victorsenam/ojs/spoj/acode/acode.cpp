@@ -1,54 +1,39 @@
 #include <cstdio>
+#include <cstring>
 
-int hue (char * vet, int i, int * memo) {
-    if (vet[i] == '\0') return memo[i] = 0;
-    if (memo[i] != -2) return memo[i];
-    if (vet[i] == '0') return memo[i] = -1; // não é pra chegar aqui nunca
-    if (vet[i+1] == '0') {
-        if (vet[i] != '1' && vet[i] != '2') return memo[i] = -1; // caso impossível
-        else memo[i+2] = hue(vet, i+2, memo);
+#define MAX 5002
 
-        // fuck case
-        if (memo[i+2] > -1) return memo[i+2]+1;
-        else return -1;
-    }
-    if (vet[i] == '1') {
-        memo[i+1] = hue(vet, i+1, memo);
-        if (memo[i+1] > -1) {
-            memo[i+2] = hue(vet, i+2, memo);
-        } else return -1;
-        if (memo[i+2] > -1) {
-            return memo[i+1] + memo[i+2];
-        } else return -1;
-    }
+long long int memo[MAX];
+char s[MAX];
+int n;
 
-    if (vet[i] == '2') {
-        if (vet[i+1] > '6') {
-            memo[i+1] = hue(vet, i+1, memo);
-            if (memo[i+1] > -1) return memo[i+1];
-            else return -1;
-        } else {
-            memo[i+1] = hue(vet, i+1, memo);
-            if (memo[i+1] > -1) {
-                memo[i+2] = hue(vet, i+2, memo);
-            } else return -1;
-            if (memo[i+2] > -1) {
-                return memo[i+1] + memo[i+2];
-            } else return -1;
-        }
+long long int pd (int i) {
+    if (memo[i] != -1) return memo[i];
+    
+    memo[i] = 0;
+    if (s[i-1] != '0') memo[i] += pd(i-1);
+    if (i > 1) {
+        if (s[i-2] > '2') return memo[i];
+        if (s[i-2] == '0') return memo[i];
+        if (s[i-2] == '2' && s[i-1] > '6') return memo[i];
+        memo[i] += pd(i-2);
     }
-    else return memo[i+1] = hue(vet, i+1, memo);
+    return memo[i];
 }
 
 int main () {
-    char    codigo[5001];
-    int     memo[5003];
-
-    for (int i = 0; i < 5000; i++) {
-        memo[i] = -2;
-    }
-
-    while(scanf(" %s", codigo) != EOF && codigo[0] != '0') {
-        printf("%d\n", hue(codigo, 0, memo));
+    while (scanf(" %s", s) != EOF) {
+        n = strlen(s);
+        if (n == 1 && s[0] == '0') break;
+        
+        for (int i = 1; i <= n; i++) memo[i] = -1;
+        memo[0] = 1;
+        
+//        printf("%lld -> ", pd(n));
+//        for (int i = 0; i <= n; i++) {
+//            printf("%lld ", memo[i]);
+//        }
+//        printf("\n");
+        printf("%lld\n", pd(n));
     }
 }
