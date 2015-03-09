@@ -115,17 +115,3 @@ int main () {
         else printf("winnable\n");
     }    
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
