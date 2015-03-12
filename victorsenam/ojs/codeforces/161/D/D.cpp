@@ -11,39 +11,35 @@ bool s[N];
 int n, k, a, b, root;
 
 long long int  contaPares (int v) {
-    long long int r = 0;
-    if (d[v][0]) return 0;
+    long long int r = 0, comb = 0;
+    if (s[v]) return 0;
     d[v][0] = 1;
-    
+    s[v] = 1;
+
     for (vector<unsigned int>::iterator it = g[v].begin(); it != g[v].end(); it++) {
-        if (d[*it][0]) continue;
         r += contaPares(*it);
+        for (int i = 0; !s[*it] && i < k && d[*it][i]; i++) d[v][i+1] += d[*it][i];
     }
 
-    d[v][0] = 0;
-
     for (vector<unsigned int>::iterator it = g[v].begin(); it != g[v].end(); it++) {
-        if (d[*it][0]) continue;
-        d[*it][0] = 1;
+        if (s[*it]) continue;
 
-        printf("%d : entra %d\n", v+1, *it+1);
+ /*
+        printf("%d : ", v+1);
+        for (int i = 0; i <= k; i++) printf("%d ", d[*it][i]);
+        printf("\n");
+*/
 
-        for (int j = 0; j < k; j++) d[v][j+1] += d[*it][j];
-        for (vector<unsigned int>::iterator jt = it + 1; jt != g[v].end(); jt++) {
-            if (d[*jt][0]) continue;
-
-            for (int l = 0; l <= k-2; l++) {
-                r += d[*it][l] * d[*jt][k-2-l];
-            }
-            printf("%d : (%d,%d) => r = %lld\n", v+1, *it+1, *jt+1, r);
+        for (int i = 0; i <= k-2; i++) {
+  //          printf("%d : %d[%d]*(%d[%d]-%d[%d]) = %d\n", v+1, *it+1, i, v+1, k-1-i, *it+1, k-2-i, d[*it][i]*(d[v][k-1-i] - d[*it][k-2-i]));
+            comb += d[*it][i]*(d[v][k-1-i] - d[*it][k-2-i]);
         }
-
-        printf("%d : sai %d\n", v+1, *it+1);
     }
 
     r += d[v][k];
+    r += comb/2;
+    s[v] = 0;
 
-    printf("%d : r = %lld\n", v+1, r);
     return r;
 }
 
@@ -65,14 +61,6 @@ int main () {
         }
     }
 
-    for (int i = 0; i < n; i++) {
-        printf("g[%d] : ", i+1);
-        for (vector<unsigned int>::iterator jt = g[i].begin(); jt != g[i].end(); jt++) {
-            printf("%d ", *jt+1);
-        }
-        printf("\n");
-    }
-
-    printf("%lld\n", contaPares(root));
+    printf("%I64d\n", contaPares(root));
 }
 
