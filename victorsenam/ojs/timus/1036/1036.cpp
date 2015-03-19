@@ -40,7 +40,7 @@ void multB (vector<unsigned int> * r, vector<unsigned int> * u, vector<unsigned 
 void printB (vector<unsigned int> * u) {
     bool ok = 0;
 
-    for (int i = u->size(); i >= 0; i--) {
+    for (int i = u->size() - 1; i >= 0; i--) {
         if (ok) printf("%04u", (*u)[i]);
         else if ((*u)[i] > 0u) {
             printf("%u", (*u)[i]);
@@ -60,7 +60,10 @@ void calc (int m, int v) {
         if (v >= 10 || v < 0) memo[m][v].push_back(0u);
         else memo[m][v].push_back(1u);
     } else {
+        memo[m][v].push_back(0u);
         for (int i = 0; i <= v; i++) {
+            calc(m/2, i);
+            calc(m/2+m%2, v-i);
             multB(&memo[m][v], &(memo[m/2][i]), &(memo[m/2+m%2][v-i]));
         }
     }
