@@ -10,24 +10,37 @@ vector<unsigned int> g[N];
 bool s[N];
 int n, k, a, b, root, p;
 
-long long int contaPares (int v);
-int main ();
-
-long long int contaPares (int v) {
-    long long int r = 0;
-    
+long long int  contaPares (int v) {
+    long long int r = 0, comb = 0;
     if (s[v]) return 0;
+    d[v][0] = 1;
     s[v] = 1;
+
     for (vector<unsigned int>::iterator it = g[v].begin(); it != g[v].end(); it++) {
         r += contaPares(*it);
+        for (int i = 0; !s[*it] && i < k && d[*it][i]; i++) d[v][i+1] += d[*it][i];
     }
-    s[v] = 0;
 
     for (vector<unsigned int>::iterator it = g[v].begin(); it != g[v].end(); it++) {
-       if (s[v]) continue;
+        if (s[*it]) continue;
 
-       
+ /*
+        printf("%d : ", v+1);
+        for (int i = 0; i <= k; i++) printf("%d ", d[*it][i]);
+        printf("\n");
+*/
+
+        for (int i = 0; i <= k-2; i++) {
+  //          printf("%d : %d[%d]*(%d[%d]-%d[%d]) = %d\n", v+1, *it+1, i, v+1, k-1-i, *it+1, k-2-i, d[*it][i]*(d[v][k-1-i] - d[*it][k-2-i]));
+            comb += d[*it][i]*(d[v][k-1-i] - d[*it][k-2-i]);
+        }
     }
+
+    r += d[v][k];
+    r += comb/2;
+    s[v] = 0;
+
+    return r;
 }
 
 int main () {
@@ -44,8 +57,6 @@ int main () {
             g[b].push_back(a);
         }
     }
-
-    for (root = 0; g[root].size() == 0; root++);
 
     printf("%I64d\n", contaPares(root));
 }
