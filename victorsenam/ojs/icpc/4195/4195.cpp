@@ -2,51 +2,36 @@
 
 using namespace std;
 
-#define N 1002
+#define N 1001
 
-int n, m;
-unsigned int memo[N][N], memo2[N][N], s[N], aux;
-
-unsigned int calc (int a, int b) {
-    if (memo2[a][b] == ~0u) {
-        memo2[a][b] = 0;
-        for (int i = a; i < b; i++) {
-            memo2[a][b] += (s[i]-s[i+1])*(s[i+1]-s[b+1]);
-        }
-         //   printf("[%d,%d] = %d\n", a, b, r);
-    }
-    return memo2[a][b];
-}
-
-unsigned int pd (int i, int k) {
-    int r;
-    if (i >= n) return 0;
-    else if (memo[i][k] < ~0u);
-    else if (k >= n-i-1) return 0;
-    else if (!k) memo[i][k] = calc(i, n);
-    else {
-        for (int j = i; j <= n; j++) {
-            r = calc(i, j) + pd(j+1, k-1);
-            if (memo[i][k] > r) memo[i][k] = r;
-        }
-    }
-
-    return memo[i][k];
-}
+int n, k, v;
+unsigned int m[N][N], s[N], aux;
 
 int main () {
-    while (scanf("%d %d", &n, &m) != EOF && n && m) {
+    while (scanf("%d %d", &n, &k) != EOF && n) {
         s[n] = 0;
-        for (int i = 0; i < n; i++) {
-            scanf("%u", &aux);
-            aux += s[n-i];
-            s[n-1-i] = aux;
-            for (int j = 0; j <= m; j++) memo[i][j] = ~0u;
-            for (int j = 0; j <= n; j++) memo2[i][j] = ~0u;
-            memo2[n][i] = ~0u;
+        for (int i = n-1; i >= 0; i--) {
+            scanf("%d", &aux);
+            s[i] = s[i+1] + aux;
+            printf("%d ", s[i]);
         }
-        memo2[n][n] = ~0u;
+        printf("\n");
 
-        printf("%u\n", pd(0, m));
+        for (int i = 0; i <= k; i++) m[n][i] = 0;
+        for (int i = n-1; i >= 0; i--) printf("%d ", m[i][0] = m[i+1][0] + (s[i]-s[i+1])*s[i+1]);
+        printf("\n");
+
+        for (int i = n-1; i>= 0; i--) {
+            for (int j = 1; j <= k; j++) {
+                v = m[i][j] = m[i][0];
+                for (int b = n-1; b > i; b--) {
+                    v -= s[b+1]*(s[b]-s[b+1]); // Isso está errado! Acho que estou fazendo na ordem errada...
+                    m[i][j] = min(m[i][j], v+m[b][j-1]);
+                }
+                printf("%d %d -> %d\n", i, j, m[i][j]);
+            }
+        }
+
+        printf("%d\n", m[n][k]);
     }
 }
