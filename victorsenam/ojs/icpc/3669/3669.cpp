@@ -25,12 +25,10 @@ int main () {
             for (int j = 0; j <= 'z'-'a'; j++) v[i+1][j] = v[i][j];
             v[i+1][e[i]-'a']++;
         }
-        for (int j = 0; j <= 'z'-'a'; j++) v[i+1][j] = v[i][j];
 
         s.clear();
         s.insert(0);
         s.insert(i);
-
 
         /*
         for (int j = 0; j <= 'd'-'a'; j++) {
@@ -42,7 +40,6 @@ int main () {
         }
         */
    
-
         c = 0;
 
         for (i = 0; i < k; i++) {
@@ -56,9 +53,10 @@ int main () {
             hi = *it;
 
             for (int j = 0; j <= 'z'-'a'; j++) {
-                if ((v[mid][j]-v[lo][j])^(v[hi+1][j]-v[mid][j])) {
-                    c++;
-                }
+                int a = 0;
+                if ((v[mid][j]-v[lo][j])) a++;
+                if ((v[hi][j]-v[mid][j])) a++;
+                if (a==1) c++;
             }
         }
 
