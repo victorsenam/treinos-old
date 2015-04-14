@@ -1,10 +1,1 @@
-j 1
-Case #1: NO
-h 1
-Case #2: YES
-h 0
-Case #3: NO
-h 1
-Case #4: YES
-h 0
-Case #5: NO
+g++     C.cpp   -o C

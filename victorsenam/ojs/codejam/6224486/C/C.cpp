@@ -53,7 +53,7 @@ void printState(int i, int j, quatern lo, quatern mid, quatern hi) {
 }
 
 int main () {
-    unsigned long long x, l, i, j;
+    unsigned long long x, l, i, j, n;
     quatern s[L], lo, mid, hi, tot;
     char temp;
     int t;
@@ -63,7 +63,7 @@ int main () {
         scanf("%llu %llu", &l, &x);
 
         i = 0;
-        j = l*x;
+        n = j = l*x;
         lo.v = mid.v = hi.v = 'h';
         lo.s = mid.s = hi.s = 0;
 
@@ -87,44 +87,46 @@ int main () {
             }
         }
 
+        tot = mid;
+
+        lo.v = 'h';
+        lo.s = 0;
         bool ok = 0;
-        for (i = 0; i < x*l && !ok; i++) {
+        i = 0;
+// ao inves disso, ver se i*j*k = tot
+        while (i < n && !ok) {
             lo = inc(lo, s[i%l]);
             tot = reme(tot, s[i%l]);
+            i++;
+
             if (lo.v != 'i' || lo.s) continue;
 
+// checa se é possivel achar um mid = j com esse lo
+            hi.v = 'k';
+            hi.s = 0;
+            mid = remd(tot, hi);
+ //           printf("%llu %d%c %d%c\n", i, lo.s, lo.v, mid.s, mid.v);
+
+
+            if (mid.v != 'j' || mid.s) continue;
+
             mid = tot;
-            hi = 'h';
-            for (j = x*l-1; j >= i; j--) {
+            hi.v = 'h';
+            hi.s = 0;
+            j = n;
+            while (j > i) {
+                j--;
                 hi = inc(s[j%l], hi);
-                mid = remd(mid, s[j%l]);
-                if (hi.v == 'k' && !hi.s && mid.v == 'j' && !mid.s) {
+                if (hi.v == 'k' && !hi.s) {
+                    //printState(i, j, lo, mid, hi);
                     ok = 1;
                     break;
                 }
             }
         }
 
- //       printState(i, j, lo, mid, hi);
-        while (i < j) {
-            do {
-                lo = inc(lo, s[i%l]);
-                mid = reme(mid, s[i%l]);
-                i++;
-   //             printState(i, j, lo, mid, hi);
-            } while (i < j && (lo.v != 'i' || lo.s));
-            if (i < j && hi.v == 'k' && !hi.s && mid.v == 'j' && !mid.s) break; 
-
-            do {
-                j--;
-                hi = inc(s[j%l], hi);
-                mid = remd(mid, s[j%l]);
-     //               printState(i, j, lo, mid, hi);
-            } while (i < j && (hi.v != 'k' || hi.s));
-            if (i < j && mid.v == 'j' && !mid.s) break; 
-        }
         printf("Case #%d: ", c);
-        if (i < j) printf("YES");
+        if (ok) printf("YES");
         else printf("NO");
         printf("\n");
     }
