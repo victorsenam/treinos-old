@@ -12,21 +12,18 @@ queue<int> q;
 bool liv (int a) {
     int k = 0;
     if (a/m == (a+1)/m && s[a+1] == '1') k++;
-    if (a/m == (a-1)/m && s[a-1] == '1') k++;
+    if (a > 0 && a/m == (a-1)/m && s[a-1] == '1') k++;
     if (a+m < n*m && s[a+m] == '1') k++;
     if (a-m >= 0 && s[a-m] == '1') k++;
 
-    printf("liv(%d, %d) = %d\n", a/m, a%m, k==1);
     return (k==1);
 }
 
 bool ext (int a) {
-    printf("ext(%d, %d)\n");
     if (a/m == (a+1)/m && liv(a+1)) return 1;
-    if (a/m == (a-1)/m && liv(a-1)) return 1;
+    if (a > 0 && a/m == (a-1)/m && liv(a-1)) return 1;
     if (a+m < n*m && liv(a+m)) return 1;
     if (a-m >= 0 && liv(a-m)) return 1;
-    printf("\t false\n");
     return 0;
 }
 
@@ -56,7 +53,7 @@ int main () {
                     c++;
                     if (!v[a+1]) q.push(a+1);
                 }
-                if (a/m == (a-1)/m && s[a-1]=='1') {
+                if (a > 0 && a/m == (a-1)/m && s[a-1]=='1') {
                     c++;
                     if (!v[a-1]) q.push(a-1);
                 }
@@ -69,7 +66,7 @@ int main () {
                     if (!v[a-m]) q.push(a-m);
                 }
 
-                if (c == 1) {
+                if (c <= 1) {
                     if (p[0] == -1)
                         p[0] = a;
                     else if (p[1] == -1)
