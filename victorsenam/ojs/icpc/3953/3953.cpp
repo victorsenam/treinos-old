@@ -12,10 +12,10 @@ bool st[N][N];
 
 void turn(int x, int y) {
     st[x][y] = !st[x][y];
-    if (x >= 1) st[x-1][y] = !st[x-1][y];
-    if (x < n-1) st[x+1][y] = !st[x+1][y];
-    if (y >= 1) st[x][y-1] = !st[x][y-1];
-    if (y < m-1) st[x][y+1] = !st[x][y+1];
+    if (x-1 >= 0) st[x-1][y] = !st[x-1][y];
+    if (x+1 < m) st[x+1][y] = !st[x+1][y];
+    if (y-1 >= 0) st[x][y-1] = !st[x][y-1];
+    if (y+1 < n) st[x][y+1] = !st[x][y+1];
 }
 
 int main () {
@@ -39,28 +39,26 @@ int main () {
             
             count = 0;
             for (int i = 0; i < n; i++) {
-                if ((1<<i)&at == at) {
-                    printf("1");
+                if ((at>>i)%2) {
+     //               printf("1");
                     turn(0, i);
                     count++;
                 }
-                else printf("0");
+ //               else printf("0");
             }
-            printf(" --> ");
-
-            for (int i = 0; i < n; i++)
-                printf("%d", st[0][i]);
-            printf("\n");
+   //         printf(" -> ");
+     //       for (int i = 0; i < n; i++) printf("%d", st[0][i]);
+       //     printf("\n");
 
             for (int i = 0; i < m-1; i++) {
                 for (int j = 0; j < n; j++) {
                     if (st[i][j]) {
-                        turn(j+1, i);
+                        turn(i+1, j);
                         count++;
                     }
                 }
             }
-            
+
             int h;
             for (h = 0; h < n && !st[m-1][h]; h++);
 
