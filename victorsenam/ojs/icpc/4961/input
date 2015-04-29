@@ -1,0 +1,36 @@
+4
+h i j k
+1-h 1-i 1-j 1-k
+5-i 10-h 10-k 10-j
+5-j 15-k 15-h 15-i
+5-k 15-j 20-i 20-h
+4
+hijk
+ijijijijijijijk
+kijkjikjikijkij
+ijk
+2
+a b
+3-b 5-b
+6-a 2-b
+2
+aba
+bba
+2
+m e
+5-e 4-m
+3-e 4-m
+1
+eme
+1
+a
+5-a
+2
+aaa
+a
+1
+z
+5-z
+1
+zzzz
+0
