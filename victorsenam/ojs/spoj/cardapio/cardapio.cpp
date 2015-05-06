@@ -2,7 +2,7 @@
 
 using namespace std;
 
-#define N 4000
+#define N 4004
 
 typedef int num;
 
@@ -18,11 +18,12 @@ int n;
 int a, b;
 int o[N], ret[N];
 set<int> seen;
+bool isReq;
 
 bool dfs (int v) {
     if (o[v] != -1) return 1;
 
-    printf("%d\n", v);
+    //printf("[%d]\n", v);
     o[v] = ret[v] = cnt++;
     st.push(v);
 
@@ -53,12 +54,13 @@ bool dfs (int v) {
 int main () {
     t = 0;
     while (scanf("%d", &n) != EOF)  {
-        for (int i = 0; i < 2*n; i++) {
+        for (int i = 0; i < 4*n; i++) {
             adj[i].clear();
             o[i] = -1;
         }
         while (!st.empty()) st.pop();
 
+        mp.clear();
         for (int i = 0; i < n; i++) {
             scanf(" %s", temp);
             val = (temp[0] != '!');
@@ -76,7 +78,7 @@ int main () {
 
   //      for (it = mp.begin(); it != mp.end(); it++)
   //          printf("%s %d\n", it->first.c_str(), it->second);
-/*
+  /*
         for (int i = 0; i < 4*n; i++) {
             printf("%d -> ", i);
             for (int j = 0; j < adj[i].size(); j++) {
@@ -86,11 +88,14 @@ int main () {
         }
 */
 
-        if (t) printf("\n");
         printf("Instancia %d\n", ++t);
+        printf("%d elementos\n", 2*n);
         bool isvalid = 1;
-        for (int i = 0; i < 4*n && isvalid; i++) isvalid = isvalid && dfs(i);
+        for (int i = 0; i < 4*n && isvalid; i++) {
+            if (adj[i].size()) isvalid = isvalid && dfs(i);
+        }
         if (isvalid) printf("sim\n");
         else printf("nao\n");
+        printf("\n");
     }
 }
