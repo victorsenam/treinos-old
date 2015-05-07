@@ -7,7 +7,7 @@ using namespace std;
 typedef int num;
 
 map<string, int> mp;
-map<string, int>::iterator it;
+map<string, int>::iterator it, jt;
 stack<int> st;
 int cnt;
 bool val;
@@ -41,12 +41,12 @@ bool dfs (int v) {
     seen.clear();
     while (!st.empty()) {
         a = st.top();
-        printf("%d ", a);
+       // printf("%d ", a);
         st.pop();
         if (seen.find((a+2*n)%(4*n)) != seen.end()) return 0;
         seen.insert(a);
     }
-    printf("\n");
+   // printf("\n");
 
     return 1;
 }
@@ -76,9 +76,13 @@ int main () {
             adj[(b+2*n)%(4*n)].push_back(a);
         }
 
-  //      for (it = mp.begin(); it != mp.end(); it++)
-  //          printf("%s %d\n", it->first.c_str(), it->second);
-  /*
+/*
+        for (it = mp.begin(); it != mp.end(); it++) {
+            for (jt = mp.begin(); jt != mp.end(); jt++) {
+                adj[it->second].push_back(jt->second + 2*n);
+            }
+        }
+*/
         for (int i = 0; i < 4*n; i++) {
             printf("%d -> ", i);
             for (int j = 0; j < adj[i].size(); j++) {
@@ -86,7 +90,6 @@ int main () {
             }
             printf("\n");
         }
-*/
 
         printf("Instancia %d\n", ++t);
         printf("%d elementos\n", 2*n);
