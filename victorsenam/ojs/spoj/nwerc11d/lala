@@ -1,0 +1,41 @@
+g++     nwerc11d.cpp   -o nwerc11d
+nwerc11d.cpp: In function ‘int main()’:
+nwerc11d.cpp:108:53: warning: extended initializer lists only available with -std=c++11 or -std=gnu++11
+                         adj[N][N-1][0][0].push_back({i, j, k, l});
+                                                     ^
+nwerc11d.cpp:108:65: warning: extended initializer lists only available with -std=c++11 or -std=gnu++11
+                         adj[N][N-1][0][0].push_back({i, j, k, l});
+                                                                 ^
+nwerc11d.cpp:125:55: warning: extended initializer lists only available with -std=c++11 or -std=gnu++11
+                             adj[i][j][k][0].push_back({i, j, (k+2)%4, 1});
+                                                       ^
+nwerc11d.cpp:125:73: warning: extended initializer lists only available with -std=c++11 or -std=gnu++11
+                             adj[i][j][k][0].push_back({i, j, (k+2)%4, 1});
+                                                                         ^
+nwerc11d.cpp:126:55: warning: extended initializer lists only available with -std=c++11 or -std=gnu++11
+                             adj[i][j][k][1].push_back({i, j, (k+2)%4, 0});
+                                                       ^
+nwerc11d.cpp:126:73: warning: extended initializer lists only available with -std=c++11 or -std=gnu++11
+                             adj[i][j][k][1].push_back({i, j, (k+2)%4, 0});
+                                                                         ^
+nwerc11d.cpp:127:55: warning: extended initializer lists only available with -std=c++11 or -std=gnu++11
+                             adj[i][j][k][1].push_back({i+mov[k], j+mov[(k+3)%4], (k+2)%4, 1});
+                                                       ^
+nwerc11d.cpp:127:93: warning: extended initializer lists only available with -std=c++11 or -std=gnu++11
+                             adj[i][j][k][1].push_back({i+mov[k], j+mov[(k+3)%4], (k+2)%4, 1});
+                                                                                             ^
+nwerc11d.cpp:139:59: warning: extended initializer lists only available with -std=c++11 or -std=gnu++11
+                                 adj[i][j][k][1].push_back({i, j, l, 0});
+                                                           ^
+nwerc11d.cpp:139:71: warning: extended initializer lists only available with -std=c++11 or -std=gnu++11
+                                 adj[i][j][k][1].push_back({i, j, l, 0});
+                                                                       ^
+nwerc11d.cpp:141:55: warning: extended initializer lists only available with -std=c++11 or -std=gnu++11
+                             adj[i][j][k][1].push_back({i+mov[k], j+mov[(k+3)%4], (k+2)%4, 1});
+                                                       ^
+nwerc11d.cpp:141:93: warning: extended initializer lists only available with -std=c++11 or -std=gnu++11
+                             adj[i][j][k][1].push_back({i+mov[k], j+mov[(k+3)%4], (k+2)%4, 1});
+                                                                                             ^
+nwerc11d.cpp:150:22: warning: extended initializer lists only available with -std=c++11 or -std=gnu++11
+         else if (dfs({N, N-1, 0, 0})) printf("YES\n");
+                      ^

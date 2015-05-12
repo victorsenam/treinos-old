@@ -2,61 +2,82 @@
 
 using namespace std;
 
-#define H 500
-
 typedef long long int num;
 
-int t;
-int h, w;
+#define N 500
+
+int t, h, w;
 num d;
-num hei[H][H];
-bool done[H][H];
-num seen[H][H];
-num turn, eqs, cnt;
-int mov[4] = {1, -1, 0, 0};
+num tab[N][N];
+int vis[N][N];
 
-bool dfs(int i, int j, num lo, num hi) {
-    if (i < 0 || i >= h || j < 0 || j >= w) return 0;
-    if (seen[i][j] == turn) return 0;
-    if (hei[i][j] <= lo) return 0;
-    if (hei[i][j] > hi) return 1;
-
-    seen[i][j] = turn;
-
-    if (hei[i][j] == hi) {
-        done[i][j] = 1;
-        eqs++;
+class hcomp {
+public:
+    bool operator() (pair<int, int> a, pair<int, int> b) {
+        return tab[a.first][a.second] < tab[b.first][b.second];
     }
+};
 
-    bool r = 0;
-    for (int k = 0; k < 4; k++)
-        if(dfs(i+mov[k], j+mov[(k+2)%4], lo, hi)) r = 1;
-    
-    return r;
-}
+priority_queue<pair<int, int>, vector<pair<int, int> >, hcomp> pq;
+queue<pair<int, int> > q;
+pair<int, int> pos;
+num hi, lo, at;
+int eqs, turn;
+bool ispeak, isborder;
 
 int main () {
     scanf("%d", &t);
     while (t--) {
         scanf("%d %d %lld", &h, &w, &d);
+
         for (int i = 0; i < h; i++) {
             for (int j = 0; j < w; j++) {
-                scanf("%lld", &hei[i][j]);
-                done[i][j] = 0;
-                seen[i][j] = 0;
+                scanf("%lld", &tab[i][j]);
+                pq.push(make_pair(i, j));
+                vis[i][j] = 0;
             }
         }
 
-        turn = eqs = cnt = 0;
-        for (int i = 0; i < h; i++) {
-            for (int j = 0; j < w; j++) {
-                if (done[i][j]) continue;
-                if (hei[i][j] < d) continue;
-                turn++;
-                eqs = 0;
+        int cnt = 0;
+        turn = 0;
+        while (!pq.empty()) {
+            pos = pq.top();
+            pq.pop();
+            hi = tab[pos.first][pos.second];
+            if (vis[pos.first][pos.second]) continue;
 
-                if(!dfs(i, j, hei[i][j] - d, hei[i][j])) cnt += eqs;
+            if (hi < d) break;
+            lo = hi - d;
+
+            q.push(pos);
+            ispeak = 1;
+            turn++;
+            eqs = 0;
+
+            while (!q.empty()) {
+                pos = q.front();
+                q.pop();
+
+                if (vis[pos.first][pos.second] == turn) continue;
+
+                at = tab[pos.first][pos.second];                
+                isborder = vis[pos.first][pos.second];
+
+                vis[pos.first][pos.second] = turn;
+
+                if (at == hi) eqs++;
+
+                if (at > hi || (at > lo && isborder)) ispeak = 0;
+                if (isborder || at <= lo) continue;
+
+                for (int i = 0; i < 4; i++) {
+                    pos.first += (!i) - (i==1) - (i==2) + (i==3);
+                    pos.second += (i==1) - (i==2) - (i==3);
+                    if (pos.first >= 0 && pos.first < h && pos.second >= 0 && pos.second < w) q.push(pos);
+                }
             }
+
+            cnt += eqs*ispeak;
         }
 
         printf("%d\n", cnt);
