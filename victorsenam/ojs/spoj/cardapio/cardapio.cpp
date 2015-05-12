@@ -16,7 +16,7 @@ bool val;
 int ord[N], ret[N];
 int cnt;
 
-bool checkStrong() 
+bool checkStrong(int v)
 {
     int u;
     seen.clear();
@@ -25,13 +25,14 @@ bool checkStrong()
     {
         u = st.top();
         st.pop();
-        if (u%2) printf("!");
-        printf("%d ", u/2);
+        //if (u%2) printf("!");
+        //printf("%d ", u/2);
         seen.insert(u);
         ord[u] = INT_MAX;
         if (seen.find(u^1) != seen.end()) return 0;
+        if (u==v) break;
     }
-    printf("\n");
+    //printf("\n");
 
     return 1;
 }
@@ -43,6 +44,8 @@ bool dfs(int v)
  //       if (v%2) printf("!");
  //       printf("%d\n", v/2);
     ord[v] = ret[v] = cnt++;
+
+    st.push(v);
 
     for (int i = 0; i < adj[v].size(); i++) 
     {
@@ -57,10 +60,8 @@ bool dfs(int v)
         }
     }
 
-    st.push(v);
-
     if (ret[v] < ord[v]) return 1;
-    return checkStrong();
+    return checkStrong(v);
 }
 
 int main () 
@@ -102,6 +103,7 @@ int main ()
         if (dfs(2*mp.size())) printf("sim\n");
         else printf("nao\n");
         printf("\n");
+
 /*
         for (map<string, int>::iterator it = mp.begin(); it != mp.end(); it++) {
             printf("%d -> ", it->second);
