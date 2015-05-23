@@ -64,8 +64,11 @@ int main () {
         scanf("%d %d", &a, &b);
         a--; b--;
         adj[a].push_back(v+b);
-        adj[b].push_back(v+a);
+        adj[a+b].push_back(b);
         cap[a][v+b] = INT_MAX;
+
+        adj[b].push_back(v+a);
+        adj[b+v].push_back(a);
         cap[b][v+a] = INT_MAX;
     }
 
@@ -75,7 +78,7 @@ int main () {
         turn[2*v]++;
         q.push(2*v);
 
-        while (!q.empty() && turn[2*v+1] < turn[2*v]) {
+        while (!q.empty() && turn[2*v+1] != turn[2*v]) {
             a = q.front();
             q.pop();
 
@@ -83,9 +86,9 @@ int main () {
 
             for (int i = 0; i < adj[a].size(); i++) {
                 if (cap[a][adj[a][i]] == 0) continue;
-                if (turn[adj[a][i]] == turn[2*v]) continue;
+                if (turn[adj[a][i]] == turn[a]) continue;
 
-                turn[adj[a][i]] = turn[2*v];
+                turn[adj[a][i]] = turn[a];
                 org[adj[a][i]] = a;
 
                 q.push(adj[a][i]);
