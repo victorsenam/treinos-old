@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 
 #ifndef ONLINE_JUDGE
-#define debug(...) fprintf(stderr, "%d| ", __LINE__); fprintf(stderr, __VA_ARGS__)
+#define debug(...) fprintf(stderr, "%d| ", __LINE__); fprintf(stderr, __VA_ARGS__); fprintf(stderr, "\n")
 #else
 #define debug(...) //
 #endif
@@ -11,17 +11,16 @@
 
 using namespace std;
 
+typedef int num;
+
 vector<int> adj[2*V+2];
 int org[2*V+2];
 int turn[2*V+2];
-int cap[2*V+2][2*V+2];
+num cap[2*V+2][2*V+2];
 int v, e;
-int a, b, c;
-int obj;
+int a;
+num obj, c, b;
 queue<int> q;
-
-
-typedef int num;
 
 int main () {
     scanf("%d %d", &v, &e);
@@ -63,6 +62,7 @@ int main () {
 
     for (int i = 0; i < e; i++) {
         scanf("%d %d", &a, &b);
+        a--; b--;
         adj[a].push_back(v+b);
         adj[b].push_back(v+a);
         cap[a][v+b] = INT_MAX;
@@ -79,6 +79,8 @@ int main () {
             a = q.front();
             q.pop();
 
+            debug("%d", a);
+
             for (int i = 0; i < adj[a].size(); i++) {
                 if (cap[a][adj[a][i]] == 0) continue;
                 if (turn[adj[a][i]] == turn[2*v]) continue;
@@ -91,17 +93,24 @@ int main () {
         }
         while (!q.empty()) q.pop();
 
+        debug("END BFS");
+
         if (turn[2*v+1] < turn[2*v]) break;
+
+        debug("FOUND PATH");
 
         a = 2*v+1;
         c = INT_MAX;
-        while (a != 2*v)
+        while (a != 2*v) {
             c = min(c, cap[org[a]][a]);
+            a = org[a];
+        }
 
         a = 2*v+1;
         while (a != 2*v) {
             cap[org[a]][a] -= c;
             cap[a][org[a]] += c;
+            a = org[a];
         }
     }
 
