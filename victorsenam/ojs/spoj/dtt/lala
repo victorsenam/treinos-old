@@ -1,0 +1,5 @@
+g++     dtt.cpp   -o dtt
+dtt.cpp:45:5: error: expected declaration before ‘}’ token
+     }
+     ^
+make: ** [dtt] Erro 1
