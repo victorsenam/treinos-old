@@ -12,7 +12,7 @@ typedef int num;
 #endif
 
 
-#define N 10000
+#define N 100000
 
 int n, m, a, b;
 char c;
@@ -20,68 +20,66 @@ vector<int> adj[N];
 int cnt[N];
 bool app[N];
 bool comm[N];
+int comms;
+bool inQueue[N];
 int par[N];
-queue<int> q;
 
-int setPar(int v) {
-    if (cnt[v]) return 0;
+int buildTree (int v) {
     cnt[v] = 1;
-    
     for (int i = 0; i < adj[v].size(); i++) {
-        if (cnt[adj[v][i]]) continue;
+        if (par[adj[v][i]] != -1) continue;
         par[adj[v][i]] = v;
-        cnt[v] += setPar(adj[v][i]);
+        cnt[v] += buildTree(adj[v][i]);
     }
-
     return cnt[v];
 }
 
-void change(int v, int val) {
-    debug("%d %d", v, val);
-    if (v < 0) return;
-
+void changeState (int v, int val) {
+    if (v == -1) return;
     if (comm[v]) {
         val += !app[v] - app[v];
         app[v] = !app[v];
+        comms--;
     }
-        
-    cnt[v] += val;
     comm[v] = 0;
-    change(par[v], val);
+    cnt[v] += val;
+    if (val != 0) 
+        changeState(par[v], val);
+}
+
+void emmit (int v) {
+    for (int i = 0; i < adj[v].size() && comms; i++)
+        if (par[adj[v][i]] == v) emmit(adj[v][i]);
+
+    changeState(v, 0);
 }
 
 int main () {
     scanf("%d", &n);
-
-    par[0] = -1;
-    for (int i = 0; i < n-1; i++) {
-        cnt[i] = 0;
+    for (int i = 0; i < n; i++) {
+        cnt[i] = comm[i] = inQueue[i] = 0;
         app[i] = 1;
-        comm[i] = 0;
+        par[i] = -1;
+        if (!i) continue;
         scanf("%d %d", &a, &b);
-        adj[a-1].push_back(b-1);
-        adj[b-1].push_back(a-1);
+        if (b != 1) adj[a-1].push_back(b-1);
+        if (a != 1) adj[b-1].push_back(a-1);
     }
-    cnt[n-1] = 0;
-    comm[n-1] = 0;
-    app[n-1] = 1;
 
-    setPar(0);
+    comms = 0;
+    buildTree(0);
 
     scanf("%d", &m);
     for (int i = 0; i < m; i++) {
         scanf(" %c %d", &c, &a);
-        debug("%c %d", c, a);
+        a--;
+
         if (c == 'Q') {
-            while (!q.empty()) {
-                if (comm[q.front()])
-                    change(q.front(), 0);
-                q.pop();
-            }
-            printf("%d\n", cnt[a-1]);
+            emmit(a);
+            printf("%d\n", cnt[a]);
         } else {
-            q.push(a-1);
-            comm[a-1] = !comm[a-1];
+            comm[a] = !comm[a];
+            comms += comm[a] - !comm[a];
         }
     }
 }
