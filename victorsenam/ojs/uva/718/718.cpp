@@ -2,7 +2,7 @@
 
 using namespace std;
 typedef int num;
-//#define ONLINE_JUDGE
+#define ONLINE_JUDGE
 #ifndef ONLINE_JUDGE
 #define debug(...) fprintf(stderr, "%3d| ", __LINE__); fprintf(stderr, __VA_ARGS__); fprintf(stderr, "\n")
 #else
@@ -81,39 +81,45 @@ int main () {
             }
 
             for (int j = i+1; j < n; j++) {
+                pair<int, pair<int, int> > a;
+                int b, c;
+
+                debug("---");
                 a = euclid(ele[i][0], -ele[j][0]);
-                int b = ele[j][1] - ele[i][1];
-                int c;
 
-                debug("(%d)*(%d) - (%d)*(%d) = %d -> %d",
-                    ele[i][0],
-                    a.second.first,
-                    ele[j][0],
-                    a.second.second,
-                    a.first,
-                    b
-                );
+                if ( (ele[j][1]-ele[i][1])%a.first ) continue; // n existe solução
 
-                if (b%a.first) continue;
+                // ve se existe solução no intervalo (ele[i][1], f)
+                a.second.first *= (ele[j][1]-ele[i][1])/a.first;
 
-                debug("(%d)*(%d) + (%d) = %d", a.second.first, ele[i][0], ele[i][1], a.second.first*ele[i][0] + ele[i][1]);
-                b = a.second.first*ele[i][0] + ele[i][1];
+                b = -a.second.first/ele[j][0];
+                while (a.second.first+ele[j][0]*b < 0) b++;
+                while (a.second.first+ele[j][0]*(b-1) > 0) b--;
 
-                c = (((f-ele[i][1])/ele[i][0])-b)/ele[j][0];
+                if (ele[i][0]*(a.second.first+ele[j][0]*b) + ele[i][1] > f) continue;
 
-                if (b + ele[j][0]*c < 0) continue;
+                // ve se existe solução no intervalo (ele[j][1], f)
+                a.second.second *= (ele[j][1]-ele[i][1])/a.first;
+
+                b = -a.second.second/ele[i][0];
+                while (a.second.second+ele[i][0]*b < 0) b++;
+                while (a.second.second+ele[i][0]*(b-1) > 0) b--;
+
+                if (ele[j][0]*(a.second.second+ele[i][0]*b) + ele[j][1] > f) continue;
 
                 adj[i].push_back(j);
                 adj[j].push_back(i);
             }
         }
 
+/*
         for (int i = 0; i < n+2; i++) {
             debug("%d", i);
             for (int j = 0; j < adj[i].size(); j++) {
                 debug("\t%d", adj[i][j]);
             }
         }
+*/
 
         if (dfs(n))
             printf("It is possible to move the furniture.\n");
