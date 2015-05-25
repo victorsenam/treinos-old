@@ -1,6 +1,4 @@
 #include <bits/stdc++.h>
-:w
-:q
 
 #ifndef ONLINE_JUDGE
 #define debug(...) fprintf(stderr, "%d| ", __LINE__); fprintf(stderr, __VA_ARGS__)
@@ -11,46 +9,52 @@
 #define N 5000001
 
 using namespace std;
-typedef unsigned long long int num;
 
-int crivo[N];
-int a, b, m, p;
-num cnt;
+typedef int num;
+
+int memo[N];
+int acc[N];
+int t, a, b;
+vector<int> primes;
 
 int fact(int i) {
-    if (crivo[i]) return crivo[i];
+    int j;
     if (i < 2) return 0;
-    
-    for (int j = 2; j*j <= i; j++) {
+    if (memo[i] > 0) return memo[i];
+
+    for (int k = 0; k < primes.size() &&  primes[k]*primes[k] <= i; k++) {
+        j = primes[k];
         if (i%j) continue;
-        crivo[i] = fact(j)+fact(i/j);
-        return crivo[i];
+
+        return memo[i] = fact(j) + fact(i/j);
     }
-    
-    return crivo[i] = 1;
+
+    return memo[i] = 1;
 }
 
 int main () {
-    for (int i = 0; i <= N; i++) crivo[i] = 0;
-
-    for (int i = 2; i <= N; i++) {
-        if (crivo[i]) continue;
-        crivo[i] = 1;
-        for (int j = 2; j*i <= N; j++)
-            crivo[j*i] = fact(j) + 1;
-    }
+    for (int i = 0; i <= N; i++) memo[i] = 0;
     
-    int t;
+    for (int i = 2; i <= N; i++) {
+        if (memo[i]) continue;
+        memo[i] = 1;
+        primes.push_back(i);
+        for (int j = 2; j*i <= N; j++)
+            memo[j*i] = -1;
+    }
+    for (int i = 2; i < primes.size(); i++) {
+        for (int j = 2; j*primes[i] <= N; j++)
+            memo[j*primes[i]] = 1 + fact(j);
+    }
+
+    acc[0] = acc[1] = 0;
+    for (int i = 2; i <= N; i++)
+        acc[i] = acc[i-1] + fact(i);
+
     scanf("%d", &t);
     while (t--) {
         scanf("%d %d", &a, &b);
         
-        cnt = 0;
-        for (int i = b+1; i <= a; i++) {
-            //debug("%d -> %d\n", i, fact(i));
-            cnt += fact(i);
-        }
-
-        printf("%I64u\n", cnt);
+        printf("%d\n", acc[a] - acc[b]);
     }
 }

@@ -6,7 +6,7 @@
 #define debug(...) //
 #endif
 
-#define N 3000
+#define N 6000
 
 using namespace std;
 
@@ -26,7 +26,7 @@ int main () {
 
     a = 0;
     b = 0;
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < N/2; i++) {
         if (f[i] <= 1) continue;
         b = max(b, i);
         while (f[b]) b++;
