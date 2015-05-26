@@ -11,7 +11,7 @@
 
 using namespace std;
 
-typedef long long int num;
+typedef int num;
 
 vector<int> adj[2*V+2];
 int org[2*V+2];
@@ -31,7 +31,7 @@ int main () {
 
     b = 0;
     for (int i = 0; i < v; i++) {
-        scanf("%I64d", &c);
+        scanf("%d", &c);
         adj[i].push_back(2*v);
         adj[2*v].push_back(i);
         cap[2*v][i] = c;
@@ -46,7 +46,7 @@ int main () {
 
     obj = 0;
     for (int i = 0; i < v; i++) {
-        scanf("%I64d", &c);
+        scanf("%d", &c);
         adj[v+i].push_back(2*v+1);
         adj[2*v+1].push_back(v+i);
         cap[v+i][2*v+1] = c;
@@ -64,12 +64,12 @@ int main () {
         scanf("%d %d", &a, &b);
         a--; b--;
         adj[a].push_back(v+b);
-        adj[a+b].push_back(b);
-        cap[a][v+b] = LLONG_MAX;
+        adj[v+a].push_back(b);
+        cap[a][v+b] = INT_MAX;
 
         adj[b].push_back(v+a);
         adj[b+v].push_back(a);
-        cap[b][v+a] = LLONG_MAX;
+        cap[b][v+a] = INT_MAX;
     }
 
     turn[2*v] = turn[2*v+1] = 0;
@@ -103,7 +103,7 @@ int main () {
         debug("FOUND PATH");
 
         a = 2*v+1;
-        c = LLONG_MAX;
+        c = INT_MAX;
         while (a != 2*v) {
             c = min(c, cap[org[a]][a]);
             a = org[a];

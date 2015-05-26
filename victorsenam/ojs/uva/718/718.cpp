@@ -10,42 +10,38 @@ typedef int num;
 #endif
 
 
-#define N 100
+#define N 101
 
-int t, n, f, init, end;
-pair<int, pair<int, int> > a;
+int n, f, ini, fin;
+int a[N];
+int b[N];
+int ar, br;
+int k, l, x;
+int m;
 vector<int> adj[N+2];
 bool v[N+2];
-int ele[N][2];
+int t;
 
-pair<int, pair<int, int> > euclid(int a, int b) {
-    pair<int, pair<int, int> > aux;
-    if (b == 0) aux = make_pair(a, make_pair(1, 0));
-    else {
-        int val, divi;
-        aux = euclid(b, a%b);
-    
-        divi = a/b;
-        /*
-        if (a%b) {
-            if (a < 0 && b > 0) divi--;
-            else if (a > 0 && b < 0) divi--;
-        }*/
-
-        val = aux.second.first;
-        aux.second.first = aux.second.second;
-        aux.second.second = val - divi*aux.second.second;
-
+int euclid(int a, int b) {
+    int m, aux;
+    // altera k e l
+    if (b == 0) {
+        k = 1;
+        l = 0;
+        return a;
     }
-    
-    debug("E (%d %d) -> %d %d %d", a, b, aux.first, aux.second.first, aux.second.second);
 
-    return aux;
+    m = euclid(b, a%b);
+    aux = k;
+    k = l;
+    l = aux - (a/b)*l;
+    return m;
 }
 
 bool dfs(int u) {
     if (u == n+1) return 1;
     if (v[u]) return 0;
+
     v[u] = 1;
 
     for (int i = 0; i < adj[u].size(); i++)
@@ -57,71 +53,57 @@ bool dfs(int u) {
 int main () {
     scanf("%d", &t);
     while (t--) {
-        scanf("%d %d %d %d", &f, &n, &init, &end);
-        
+        scanf("%d %d %d %d", &f, &n, &ini, &fin);
+        f--;
         for (int i = 0; i < n; i++) {
-            scanf("%d %d", &ele[i][0], &ele[i][1]);   
-            //debug("S %d %d", ele[i][0], ele[i][1]);
+            scanf("%d %d", &a[i], &b[i]);
             adj[i].clear();
             v[i] = 0;
         }
         adj[n].clear();
         adj[n+1].clear();
         v[n] = v[n+1] = 0;
-        
+
         for (int i = 0; i < n; i++) {
-            if (init-ele[i][1] >= 0 && (init-ele[i][1])%ele[i][0] == 0) {
+            if (ini >= b[i] && (ini-b[i])%a[i] == 0) {
                 adj[i].push_back(n);
                 adj[n].push_back(i);
+                debug("START %d", i);
             }
-
-            if (end-ele[i][1] >= 0 && (end-ele[i][1])%ele[i][0] == 0) {
+            if (fin >= b[i] && (fin-b[i])%a[i] == 0) {
                 adj[i].push_back(n+1);
                 adj[n+1].push_back(i);
+                debug("END %d", i);
             }
 
+            if (b[i] > f) continue;
             for (int j = i+1; j < n; j++) {
-                pair<int, pair<int, int> > a;
-                int b, c;
+                if (b[j] > f) continue;
+                m = euclid(a[i], -a[j]);
+                
+                if ((b[j] - b[i])%m) {
+                   // debug("(%d, %d) no meet", i, j);
+                    continue;
+                }
 
-                debug("---");
-                a = euclid(ele[i][0], -ele[j][0]);
+                k *= (b[j]-b[i])/m;
 
-                if ( (ele[j][1]-ele[i][1])%a.first ) continue; // n existe solução
+                ar = abs(a[i]*a[j]/m);
+                br = (b[i] + a[i]*k)%ar;
+                if (br > 0) br -= ar;
 
-                // ve se existe solução no intervalo (ele[i][1], f)
-                a.second.first *= (ele[j][1]-ele[i][1])/a.first;
+                //debug("%d <= %d*x+%d <= %d", max(b[i], b[j]), ar, br, f);
+                //debug("%d <= x <= %d", (max(b[i], b[j])-br)/ar, (f-br)/ar);
 
-                b = -a.second.first*a.first/ele[j][0];
-                if (ele[j][0]/a.first < 0) b = -b;
-                while (a.second.first+b*abs(ele[j][0]/a.first) < 0) b++;
-                while (a.second.first+(b-1)*abs(ele[j][0]/a.first) > 0) b--;
-
-                if (ele[i][0]*(a.second.first+ele[j][0]*b/a.first) + ele[i][1] > f) continue;
-
-                // ve se existe solução no intervalo (ele[j][1], f)
-                a.second.second *= (ele[j][1]-ele[i][1])/a.first;
-
-                b = -a.second.second*a.first/ele[i][0];
-                if (ele[i][0]/a.first < 0) b = -b;
-                while (a.second.second+b*abs(ele[i][0]/a.first) < 0) b++;
-                while (a.second.second+(b-1)*abs(ele[i][0]/a.first) > 0) b--;
-
-                if (ele[j][0]*(a.second.second+ele[i][0]*b) + ele[j][1] > f) continue;
+                if ((max(b[i],b[j])-br)%ar && (f-br)%ar && (max(b[i],b[j])-br)/ar == (f-br)/ar) continue;
+                //if (ar*((f-br)/ar)+br < (max(b[i], b[j]))) continue;
+                debug("connected %d %d", i, j);
 
                 adj[i].push_back(j);
                 adj[j].push_back(i);
             }
         }
 
-/*
-        for (int i = 0; i < n+2; i++) {
-            debug("%d", i);
-            for (int j = 0; j < adj[i].size(); j++) {
-                debug("\t%d", adj[i][j]);
-            }
-        }
-*/
 
         if (dfs(n))
             printf("It is possible to move the furniture.\n");
