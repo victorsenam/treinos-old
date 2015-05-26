@@ -2,7 +2,7 @@
 
 using namespace std;
 typedef int num;
-#define ONLINE_JUDGE
+//#define ONLINE_JUDGE
 #ifndef ONLINE_JUDGE
 #define debug(...) fprintf(stderr, "%3d| ", __LINE__); fprintf(stderr, __VA_ARGS__); fprintf(stderr, "\n")
 #else
@@ -92,18 +92,20 @@ int main () {
                 // ve se existe solução no intervalo (ele[i][1], f)
                 a.second.first *= (ele[j][1]-ele[i][1])/a.first;
 
-                b = -a.second.first/ele[j][0];
-                while (a.second.first+ele[j][0]*b < 0) b++;
-                while (a.second.first+ele[j][0]*(b-1) > 0) b--;
+                b = -a.second.first*a.first/ele[j][0];
+                if (ele[j][0]/a.first < 0) b = -b;
+                while (a.second.first+b*abs(ele[j][0]/a.first) < 0) b++;
+                while (a.second.first+(b-1)*abs(ele[j][0]/a.first) > 0) b--;
 
-                if (ele[i][0]*(a.second.first+ele[j][0]*b) + ele[i][1] > f) continue;
+                if (ele[i][0]*(a.second.first+ele[j][0]*b/a.first) + ele[i][1] > f) continue;
 
                 // ve se existe solução no intervalo (ele[j][1], f)
                 a.second.second *= (ele[j][1]-ele[i][1])/a.first;
 
-                b = -a.second.second/ele[i][0];
-                while (a.second.second+ele[i][0]*b < 0) b++;
-                while (a.second.second+ele[i][0]*(b-1) > 0) b--;
+                b = -a.second.second*a.first/ele[i][0];
+                if (ele[i][0]/a.first < 0) b = -b;
+                while (a.second.second+b*abs(ele[i][0]/a.first) < 0) b++;
+                while (a.second.second+(b-1)*abs(ele[i][0]/a.first) > 0) b--;
 
                 if (ele[j][0]*(a.second.second+ele[i][0]*b) + ele[j][1] > f) continue;
 
