@@ -31,30 +31,28 @@ void joinSol(int res[3][2], int left[3][2], int right[3][2]) {
     else
         res[2][0] = left[2][0];
 
-    leftini = left[1][0];
-    if (acc[left[1][1]] > acc[right[0][1]])
-        leftend = left[1][1];
-    else
-        leftend = right[0][1];
-
-    rightend = right[1][1];
-    if (acc[right[1][0]] < acc[left[2][0]])
-        rightini = right[1][0];
-    else
-        rightini = left[2][0];
-
-    if (acc[rightend] - acc[rightini] > acc[leftend] - acc[leftini]) {
-        res[1][0] = rightini;
-        res[1][1] = rightend;
-    } else if (acc[rightend] - acc[rightini] < acc[leftend] - acc[leftini]) {
-        res[1][0] = leftini;
-        res[1][1] = leftend;
-    } else if (rightend - rightini > leftend - leftini) {
-        res[1][0] = rightini;
-        res[1][1] = rightend;
+    if (acc[left[1][1]] - acc[left[1][0]] > acc[right[1][1]] - acc[right[1][0]]) {
+        res[1][1] = left[1][1];
+        res[1][0] = left[1][0];
+    } else if (acc[left[1][1]] - acc[left[1][0]] < acc[right[1][1]] - acc[right[1][0]]) {
+        res[1][1] = right[1][1];
+        res[1][0] = right[1][0];
+    } else if (left[1][1] - left[1][0] > right[1][1] - right[1][0]) {
+        res[1][1] = left[1][1];
+        res[1][0] = left[1][0];
     } else {
-        res[1][0] = leftini;
-        res[1][1] = leftend;
+        res[1][1] = right[1][1];
+        res[1][0] = right[1][0];
+    }
+
+    if (acc[res[1][1]] - acc[res[1][0]] < acc[right[0][1]] - acc[left[2][0]]) {
+        res[1][1] = right[0][1];
+        res[1][0] = left[2][0];
+    } else if (acc[res[1][1]] - acc[res[1][0]] == acc[right[0][1]] - acc[left[2][0]]) {
+        if (res[1][1] - res[1][0] < right[0][1] - left[2][0]) {
+            res[1][1] = right[0][1];
+            res[1][0] = left[2][0];
+        }
     }
 }
 
