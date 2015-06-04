@@ -2,7 +2,9 @@
 
 using namespace std;
 
-typedef int num;
+#define N 
+
+int n;
 
 int main() {
 }
