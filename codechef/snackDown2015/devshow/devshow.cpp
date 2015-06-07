@@ -35,24 +35,31 @@ int main ()
             v[a]++;
         }
 
-        maxi[0] = maxi[1] = 0;
+        maxi[0] = 0;
         for (int i = 1; i < n-2; i++)
-        {
             if (v[maxi[0]] < v[i]) maxi[0] = i;
-            else if (v[maxi[1]] <= v[i]) maxi[1] = i;
-        }
+
+        maxi[1] = (maxi[0] == 0) ? 1 : 0;
+
+        for( int i = 0; i < n-2; i++)
+            if( i != maxi[0] && v[i] > v[maxi[1]] )
+                maxi[1] = i;
+
 
         v[maxi[0]] += 2;
         res = -1;
 
-        posi[0][0] = n-2;
-        posi[0][1] = n-1;
+        // 0 é o voto de n-2
+        // 1 é o voto de n-1
 
-        posi[1][0] = n-2;
+        posi[0][0] = n-1;
+        posi[0][1] = n-2;
+
+        posi[1][0] = n-1;
         posi[1][1] = maxi[1];
             
         posi[2][0] = maxi[1];
-        posi[2][1] = n-1;
+        posi[2][1] = n-2;
 
         posi[3][0] = maxi[1];
         posi[3][1] = maxi[1];
@@ -60,13 +67,13 @@ int main ()
         for (int i = 0; i < 4; i++)
         {
             at = 0;
-            if (maxi[0] == maxi[1] && i > 1) break;
+            if (maxi[0] == maxi[1] && i > 0) break;
 
             v[posi[i][0]]++;
             v[posi[i][1]]++;
 
             mai = men = v[0];
-            for (int j = 0; j < n; j++)
+            for (int j = 1; j < n; j++)
             {
                if (v[j] > mai) mai = v[j];
                if (v[j] < men) men = v[j];
@@ -78,8 +85,11 @@ int main ()
                 at++;
     
             if (at > res)
+            {
                 for (int j = 0; j < 2; j++) 
                     out[j] = posi[i][j];
+                res = at;
+            }
 
             v[posi[i][0]]--;
             v[posi[i][1]]--;
