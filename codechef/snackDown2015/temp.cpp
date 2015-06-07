@@ -13,5 +13,6 @@ typedef int num;
 
 int n;
 
-int main () {
+int main () 
+{
 }
