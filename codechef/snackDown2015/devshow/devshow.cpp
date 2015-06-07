@@ -47,20 +47,23 @@ int main ()
 
         posi[0][0] = n-2;
         posi[0][1] = n-1;
+
         posi[1][0] = n-2;
         posi[1][1] = maxi[1];
+            
         posi[2][0] = maxi[1];
         posi[2][1] = n-1;
+
         posi[3][0] = maxi[1];
         posi[3][1] = maxi[1];
 
         for (int i = 0; i < 4; i++)
         {
             at = 0;
+            if (maxi[0] == maxi[1] && i > 1) break;
+
             v[posi[i][0]]++;
             v[posi[i][1]]++;
-
-            if (maxi[0] == maxi[1] && i > 1) break;
 
             mai = men = v[0];
             for (int j = 0; j < n; j++)
@@ -77,6 +80,9 @@ int main ()
             if (at > res)
                 for (int j = 0; j < 2; j++) 
                     out[j] = posi[i][j];
+
+            v[posi[i][0]]--;
+            v[posi[i][1]]--;
         }
 
         if (res == 2)
