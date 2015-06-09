@@ -1,0 +1,19 @@
+{
+  "name": "aula-stl-cpp",
+  "version": "1.0.0",
+  "description": "Aula sobre STL em C++",
+  "main": "index.js",
+  "dependencies": {
+    "finalhandler": "^0.3.6",
+    "serve-static": "^1.9.3",
+    "shower-core": "^1.0.7",
+    "shower-ribbon": "^1.0.11"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "victorsenam <victorsenam@gmail.com>",
+  "license": "ISC"
+}
