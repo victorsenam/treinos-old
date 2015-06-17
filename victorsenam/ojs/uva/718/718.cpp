@@ -3,7 +3,7 @@
 using namespace std;
 typedef long long int ll;
 typedef unsigned long long int ull;
-typedef int num;
+typedef ll num;
 #ifndef ONLINE_JUDGE
 #define debug(...) fprintf(stderr, "%3d| ", __LINE__); fprintf(stderr, __VA_ARGS__); fprintf(stderr, "\n")
 #else
@@ -12,9 +12,25 @@ typedef int num;
 
 #define N 102
 
-int f, e, ini, fim, t;
+int e;
+num ini, fim, r, s, maxi, f;
+pair<int, int> x, y;
+bool v[N];
 vector<int> adj[N];
 pair<int, int> ele[N];
+
+bool dfs(int u) {
+    if (u == e+1) return 1;
+    if (v[u]) return 0;
+
+    v[u] = 1;
+
+    for (int i = 0; i < adj[u].size(); i++)
+        if(dfs(adj[u][i]))
+            return 1;
+    
+    return 0;
+}
 
 int divfloor(int a, int b) {
     if (a < 0 && b < 0) return -divfloor(-a, -b);
@@ -49,32 +65,58 @@ int main () {
     scanf("%d", &t);
     while (t--) {
         scanf("%d %d %d %d", &f, &e, &ini, &fim);
-        for (int i = 0; i < n+2, i++) 
+        for (int i = 0; i < e+2; i++) {
             adj[i].clear();
+            v[i] = 0;
+        }
 
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i < e; i++)
             scanf("%d %d", &ele[i].first, &ele[i].second);
 
-        for (int i = 0; i < n; i++) {
-            if (ini - ele[i].second > 0 && (ini-ele[i].second)%ele[i].first == 0) {
-                adj[i].push_back(n);
-                adj[n].push_back(i);
+        for (int i = 0; i < e; i++) {
+            x = ele[i];
+            if ((ini - x.second)%x.first == 0) {
+                adj[i].push_back(e);
+                adj[e].push_back(i);
             }
-            if (fim - ele[i].second > 0 && (fim-ele[i].second)%ele[i].first == 0) {
-                adj[i].push_back(n+1);
-                adj[n+1].push_back(i);
+            if ((fim - x.second)%x.first == 0) {
+                adj[i].push_back(e+1);
+                adj[e+1].push_back(i);
             }
-            for (int j = i + 1; j < n; j++) {
-                int m, k, l, d;
-                pair<int, int> x, y;
-                x = ele[i];
+            for (int j = i + 1; j < e; j++) {
+                num m, k, l, d;
                 y = ele[j];
                 d = y.second - x.second;
                 m = euclid(x.first, &k, -y.first, &l);
 
                 if (d%m) continue;
                 
+                k %= y.first/m;
+                k *= d/m;
+                
+                r = abs(x.first*y.first/m);
+                s = ((x.first*k + x.second)%r+r)%r;
+                // r and s always positive
+
+                maxi = r*divfloor(f-1-s, r)+s;
+
+                // printf("(%d,%d) -> (%d)*h + (%d) -> %d\n", i, j, r, s, maxi);
+                if (maxi >= max(x.second, y.second)) {
+                    adj[i].push_back(j);
+                    adj[j].push_back(i);
+                }
             }
         }
+
+        for (int i = 0; i < e; i++) {
+            for (int j = 0; j < adj[i].size(); j++) {
+                printf("%d <-> %d\n", i, adj[i][j]);
+            }
+        }
+
+        if (dfs(e))
+            printf("It is possible to move the furniture.\n");
+        else
+            printf("The furniture cannot be moved.\n");
     }
 }
