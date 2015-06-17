@@ -11,15 +11,17 @@ struct BIT
     void set( int v )
     {
         n = v;
-        memset( freq, 0, sizeof freq);
+        memset( freq, 0, sizeof freq); // acho que fode se v = MV pq vc ta setando [0,MV)
     }
 
+    // add numa posicao
     void insert( int i, num val )
     {
         for(; i <= n; i += (i&-i) )
             freq[i] += val;
     }
 
+    // soma acumulada
     num count( int i )
     {
         num sum = 0;
