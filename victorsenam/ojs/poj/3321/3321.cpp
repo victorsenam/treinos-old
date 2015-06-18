@@ -1,5 +1,4 @@
 #include <cstdio>
-#include <vector>
 
 using namespace std;
 typedef long long int ll;
@@ -47,7 +46,8 @@ char c;
 int chs[N], pre[N];
 bool ex[N];
 bit tree;
-pair<int, int> edges[2*N];
+int value[2*N];
+int next[2*N];
 int cnt;
 
 int dfs (int v) {
@@ -56,10 +56,10 @@ int dfs (int v) {
     pre[v] = cnt++;
     chs[v] = 1;
 
-    int u = edges[v].second;
+    int u = next[v];
     while (u != v) {
-        chs[v] += dfs(edges[u].first);
-        u = edges[u].second;
+        chs[v] += dfs(value[u]);
+        u = next[u];
     }
 
     return chs[v];
@@ -69,34 +69,32 @@ int main () {
     scanf("%d", &n);
     
     noe = n;
-    for (int i = 0; i < n; i++) {
-        edges[i].first = i;
-        edges[i].second = i;
-    }
-    for (int i = 0; i < n-1; i++) {
-        scanf("%d %d", &a, &b);
-        a--; b--;
-        edges[noe].first = b;
-        edges[noe].second = edges[a].second;
-        edges[a].second = noe;
-        noe++;
-        
-        edges[noe].first = a;
-        edges[noe].second = edges[b].second;
-        edges[b].second = noe;
-        noe++;
-    }
-
-    cnt = 1;
     tree.set(n);
 
     for (int i = 0; i < n; i++) {
+        value[i] = i;
+        next[i] = i;
         tree.insert(i+1, 1);
         pre[i] = -1;
         chs[i] = 0;
         ex[i] = 1;
     }
+    for (int i = 0; i < n-1; i++) {
+        scanf("%d %d", &a, &b);
+        a--; 
+        b--;
+        value[noe] = b;
+        next[noe] = next[a];
+        next[a] = noe;
+        noe++;
+        
+        value[noe] = a;
+        next[noe] = next[b];
+        next[b] = noe;
+        noe++;
+    }
 
+    cnt = 1;
     dfs(0);
 
     scanf("%d", &m);
