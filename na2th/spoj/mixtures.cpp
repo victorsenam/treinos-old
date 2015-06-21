@@ -21,13 +21,13 @@ num solve( int l, int r )
         }
         else
         {
-            res[l][l] = exp[l];
-            for( int k = l+1; k <= r; k++ )
-                res[l][k] = (res[l][k-1] + exp[k])%100;
-
             mem[l][r] = oo;
+            res[l][l] = exp[l];
             for( int k = l; k+1 <= r ; k++ )
-                mem[l][r] = min( mem[l][r], solve(l,k) + solve(k+1,r) + res[l][k]*res[k+1][r] );
+            {
+                res[l][k+1] = (res[l][k] + exp[k+1])%100;
+                mem[l][r]   = min( mem[l][r], solve(l,k) + solve(k+1,r) + res[l][k]*res[k+1][r] );
+            }
         }
     }
     return mem[l][r];
