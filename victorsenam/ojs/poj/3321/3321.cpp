@@ -10,7 +10,7 @@ typedef int num;
 #define debug(...) //
 #endif
 
-#define N 100002
+#define N 100007
 
 struct bit {
     int n;
@@ -68,7 +68,7 @@ int dfs (int v) {
 int main () {
     scanf("%d", &n);
     
-    noe = n;
+    noe = n-1;
     tree.set(n);
 
     for (int i = 0; i < n; i++) {
@@ -101,10 +101,6 @@ int main () {
     for (int i = 0; i < m; i++) {
         scanf(" %c %d", &c, &a);
         a--;
- //       if (c == 'I')
-   //         tree.insert(a, 1);
-   //     else if (c == 'A')
-   //         printf("%d\n", tree.count(a));
         if (c == 'Q')
             printf("%d\n", tree.count(pre[a]+chs[a]-1) - tree.count(pre[a] - 1));
         else {
