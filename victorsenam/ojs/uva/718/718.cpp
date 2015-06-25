@@ -1,111 +1,122 @@
 #include <bits/stdc++.h>
 
 using namespace std;
-typedef int num;
-//#define ONLINE_JUDGE
+typedef long long int ll;
+typedef unsigned long long int ull;
+typedef ll num;
 #ifndef ONLINE_JUDGE
 #define debug(...) fprintf(stderr, "%3d| ", __LINE__); fprintf(stderr, __VA_ARGS__); fprintf(stderr, "\n")
 #else
 #define debug(...) //
 #endif
 
+#define N 102
 
-#define N 101
-
-int n, f, ini, fin;
-int a[N];
-int b[N];
-int ar, br;
-int k, l, x;
-int m;
-vector<int> adj[N+2];
-bool v[N+2];
-int t;
-
-int euclid(int a, int b) {
-    int m, aux;
-    // altera k e l
-    if (b == 0) {
-        k = 1;
-        l = 0;
-        return a;
-    }
-
-    m = euclid(b, a%b);
-    aux = k;
-    k = l;
-    l = aux - (a/b)*l;
-    return m;
-}
+int e, t;
+num ini, fim, r, s, maxi, f;
+pair<num, num> x, y;
+bool v[N];
+vector<int> adj[N];
+pair<num, num> ele[N];
 
 bool dfs(int u) {
-    if (u == n+1) return 1;
+    if (u == e+1) return 1;
     if (v[u]) return 0;
 
     v[u] = 1;
 
     for (int i = 0; i < adj[u].size(); i++)
-        if (dfs(adj[u][i])) return 1;
-
+        if(dfs(adj[u][i]))
+            return 1;
+    
     return 0;
+}
+
+num divfloor(num a, num b) {
+    if (a < 0 && b < 0) return -divfloor(-a, -b);
+    if (b < 0) return divfloor(-a, -b);
+
+    if (a > 0 || a%b == 0) return a/b;
+    return a/b-1;
+}
+
+num euclid (num a, num * k, num b, num * l) {
+    if (a < 0) {
+        *k = -*k;
+        return euclid(-a, k, b, l);
+    }
+    if (b < 0) {
+        *l = -*l;
+        return euclid(a, k, -b, l);
+    }
+    if (a%b == 0) {
+        *k = 0;
+        *l = 1;
+        return b;
+    }
+    num d = euclid(b, k, a%b, l);
+    num aux = *k;
+    *k = *l;
+    *l = aux - *l*(a/b);
+    return d;
 }
 
 int main () {
     scanf("%d", &t);
     while (t--) {
-        scanf("%d %d %d %d", &f, &n, &ini, &fin);
-        f--;
-        for (int i = 0; i < n; i++) {
-            scanf("%d %d", &a[i], &b[i]);
+        scanf("%d %d %d %d", &f, &e, &ini, &fim);
+        for (int i = 0; i < e+2; i++) {
             adj[i].clear();
             v[i] = 0;
         }
-        adj[n].clear();
-        adj[n+1].clear();
-        v[n] = v[n+1] = 0;
 
-        for (int i = 0; i < n; i++) {
-            if (ini >= b[i] && (ini-b[i])%a[i] == 0) {
-                adj[i].push_back(n);
-                adj[n].push_back(i);
-                debug("START %d", i);
-            }
-            if (fin >= b[i] && (fin-b[i])%a[i] == 0) {
-                adj[i].push_back(n+1);
-                adj[n+1].push_back(i);
-                debug("END %d", i);
-            }
+        for (int i = 0; i < e; i++)
+            scanf("%d %d", &ele[i].first, &ele[i].second);
 
-            if (b[i] > f) continue;
-            for (int j = i+1; j < n; j++) {
-                if (b[j] > f) continue;
-                m = euclid(a[i], -a[j]);
+        for (int i = 0; i < e; i++) {
+            x = ele[i];
+            if ((ini - x.second)%x.first == 0) {
+                adj[i].push_back(e);
+                adj[e].push_back(i);
+            }
+            if ((fim - x.second)%x.first == 0) {
+                adj[i].push_back(e+1);
+                adj[e+1].push_back(i);
+            }
+            for (int j = i + 1; j < e; j++) {
+                num m, k, l, d;
+                y = ele[j];
+                d = y.second - x.second;
+                m = euclid(x.first, &k, -y.first, &l);
+
+                if (d%m) continue;
                 
-                if ((b[j] - b[i])%m) {
-                   // debug("(%d, %d) no meet", i, j);
-                    continue;
+                k %= y.first/m;
+                k *= d/m;
+                
+                r = abs(x.first*y.first/m);
+                s = ((x.first*k + x.second)%r+r)%r;
+                // r and s always positive
+
+                maxi = r*divfloor(f-1-s, r)+s;
+
+                // printf("(%d,%d) -> (%d)*h + (%d) -> %d\n", i, j, r, s, maxi);
+                if (maxi >= max(x.second, y.second)) {
+                    adj[i].push_back(j);
+                    adj[j].push_back(i);
                 }
-
-                k *= (b[j]-b[i])/m;
-
-                ar = abs(a[i]*a[j]/m);
-                br = (b[i] + a[i]*k)%ar;
-                if (br > 0) br -= ar;
-
-                //debug("%d <= %d*x+%d <= %d", max(b[i], b[j]), ar, br, f);
-                //debug("%d <= x <= %d", (max(b[i], b[j])-br)/ar, (f-br)/ar);
-
-                if ((max(b[i],b[j])-br)%ar && (f-br)%ar && (max(b[i],b[j])-br)/ar == (f-br)/ar) continue;
-                //if (ar*((f-br)/ar)+br < (max(b[i], b[j]))) continue;
-                debug("connected %d %d", i, j);
-
-                adj[i].push_back(j);
-                adj[j].push_back(i);
             }
         }
 
+    /*
+        for (int i = 0; i < e; i++) {
+            for (int j = 0; j < adj[i].size(); j++) {
+                printf("%d <-> %d\n", i, adj[i][j]);
+            }
+        }
+    */
 
-        if (dfs(n))
+        if (dfs(e))
             printf("It is possible to move the furniture.\n");
         else
             printf("The furniture cannot be moved.\n");
