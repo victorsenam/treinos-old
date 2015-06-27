@@ -1,85 +1,111 @@
-#include <vector>
-#include <queue>
 #include <cstdio>
 
 using namespace std;
+typedef long long int ll;
+typedef unsigned long long int ull;
 typedef int num;
-//#define ONLINE_JUDGE
 #ifndef ONLINE_JUDGE
 #define debug(...) fprintf(stderr, "%3d| ", __LINE__); fprintf(stderr, __VA_ARGS__); fprintf(stderr, "\n")
 #else
 #define debug(...) //
 #endif
 
+#define N 100007
 
-#define N 100000
+struct bit {
+    int n;
+    num freq[N];
 
-int n, m, a, b;
+    void set (int siz) {
+        n = siz;
+        for (int i = 0; i <= n; i++)
+            freq[i] = 0;
+    }
+
+    void insert (int i, num val) {
+ //       printf("Insert %d on %d\n", val, i);
+        while (i <= n) {
+            freq[i] += val;
+            i += i&-i;
+        }
+    }
+
+    num count (int i) {
+ //       printf("Count %d\n", i);
+        num sum = 0;
+        while (i > 0) {
+            sum += freq[i];
+            i -= i&-i;
+        }
+        return sum;
+    }
+};
+
+int n, m, a, b, noe;
 char c;
-vector<int> adj[N];
-int cnt[N];
-bool app[N];
-bool comm[N];
-int comms;
-bool inQueue[N];
-int par[N];
+int chs[N], pre[N];
+bool ex[N];
+bit tree;
+int value[2*N];
+int next[2*N];
+int cnt;
 
-int buildTree (int v) {
-    cnt[v] = 1;
-    for (int i = 0; i < adj[v].size(); i++) {
-        if (par[adj[v][i]] != -1) continue;
-        par[adj[v][i]] = v;
-        cnt[v] += buildTree(adj[v][i]);
+int dfs (int v) {
+    if (pre[v] != -1) return 0;
+    
+    pre[v] = cnt++;
+    chs[v] = 1;
+
+    int u = next[v];
+    while (u != v) {
+        chs[v] += dfs(value[u]);
+        u = next[u];
     }
-    return cnt[v];
-}
 
-void changeState (int v, int val) {
-    if (v == -1) return;
-    if (comm[v]) {
-        val += !app[v] - app[v];
-        app[v] = !app[v];
-        comms--;
-    }
-    comm[v] = 0;
-    cnt[v] += val;
-    if (val != 0) 
-        changeState(par[v], val);
-}
-
-void emmit (int v) {
-    for (int i = 0; i < adj[v].size() && comms; i++)
-        if (par[adj[v][i]] == v) emmit(adj[v][i]);
-
-    changeState(v, 0);
+    return chs[v];
 }
 
 int main () {
     scanf("%d", &n);
+    
+    noe = n-1;
+    tree.set(n);
+
     for (int i = 0; i < n; i++) {
-        cnt[i] = comm[i] = inQueue[i] = 0;
-        app[i] = 1;
-        par[i] = -1;
-        if (!i) continue;
+        value[i] = i;
+        next[i] = i;
+        tree.insert(i+1, 1);
+        pre[i] = -1;
+        chs[i] = 0;
+        ex[i] = 1;
+    }
+    for (int i = 0; i < n-1; i++) {
         scanf("%d %d", &a, &b);
-        if (b != 1) adj[a-1].push_back(b-1);
-        if (a != 1) adj[b-1].push_back(a-1);
+        a--; 
+        b--;
+        value[noe] = b;
+        next[noe] = next[a];
+        next[a] = noe;
+        noe++;
+        
+        value[noe] = a;
+        next[noe] = next[b];
+        next[b] = noe;
+        noe++;
     }
 
-    comms = 0;
-    buildTree(0);
+    cnt = 1;
+    dfs(0);
 
     scanf("%d", &m);
     for (int i = 0; i < m; i++) {
         scanf(" %c %d", &c, &a);
         a--;
-
-        if (c == 'Q') {
-            emmit(a);
-            printf("%d\n", cnt[a]);
-        } else {
-            comm[a] = !comm[a];
-            comms += comm[a] - !comm[a];
+        if (c == 'Q')
+            printf("%d\n", tree.count(pre[a]+chs[a]-1) - tree.count(pre[a] - 1));
+        else {
+            tree.insert(pre[a], 1 - (ex[a])*2);
+            ex[a] = !ex[a];
         }
     }
 }

@@ -12,12 +12,12 @@ typedef ll num;
 
 #define N 102
 
-int e;
+int e, t;
 num ini, fim, r, s, maxi, f;
-pair<int, int> x, y;
+pair<num, num> x, y;
 bool v[N];
 vector<int> adj[N];
-pair<int, int> ele[N];
+pair<num, num> ele[N];
 
 bool dfs(int u) {
     if (u == e+1) return 1;
@@ -32,7 +32,7 @@ bool dfs(int u) {
     return 0;
 }
 
-int divfloor(int a, int b) {
+num divfloor(num a, num b) {
     if (a < 0 && b < 0) return -divfloor(-a, -b);
     if (b < 0) return divfloor(-a, -b);
 
@@ -40,7 +40,7 @@ int divfloor(int a, int b) {
     return a/b-1;
 }
 
-int euclid (int a, int * k, int b, int * l) {
+num euclid (num a, num * k, num b, num * l) {
     if (a < 0) {
         *k = -*k;
         return euclid(-a, k, b, l);
@@ -54,8 +54,8 @@ int euclid (int a, int * k, int b, int * l) {
         *l = 1;
         return b;
     }
-    int d = euclid(b, k, a%b, l);
-    int aux = *k;
+    num d = euclid(b, k, a%b, l);
+    num aux = *k;
     *k = *l;
     *l = aux - *l*(a/b);
     return d;
@@ -108,11 +108,13 @@ int main () {
             }
         }
 
+    /*
         for (int i = 0; i < e; i++) {
             for (int j = 0; j < adj[i].size(); j++) {
                 printf("%d <-> %d\n", i, adj[i][j]);
             }
         }
+    */
 
         if (dfs(e))
             printf("It is possible to move the furniture.\n");
