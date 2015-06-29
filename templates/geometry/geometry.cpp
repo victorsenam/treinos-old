@@ -4,6 +4,7 @@
 typedef int cood;
 typedef int point;
 cood x[MP], y[MP];
+point anchor;
 using namespace std;
 
 inline cood cross( point a, point b, point c )
@@ -16,8 +17,17 @@ bool lexLess( point a, point b )
 { return ( x[a]==x[b] ) ? y[a]<y[b]: x[a]<x[b] ; }
 // { return ( fabs(x[a]-x[b]) < eps ) ? y[a]<y[b] : x[a]<x[b] ; }
 
+bool grahamLess( point a, point b )
+{
+    num val = cross(anchor, a, b);
+    if( val == 0 ) return lexLess(a,b);
+    // if( fabs(val) < eps ) return lexLess(a,b);
+    return val > 0;
+}
+
 inline bool between( point a, point b, point c )
 { return ( cross(a,b,c) == 0 ) && ( inner(a,b,c) <= 0 ) ; }
+// { return ( fabs(cross(a,b,c)) < eps ) && ( inner(a,b,c) + eps < 0.0 ) ; }
 
 inline double dist(double ax, double ay, point a)
 { return sqrt( (ax-x[a])*(ax-x[a]) + (ay-y[a])*(ay-y[a]) ); }
@@ -31,8 +41,7 @@ int findHull( point * P, int ps, point * H )
     }
     int ans = 0;
     iter_swap( P, min_element(P, P+ps, lexLess) );
-    sort(P+1, P+ps, [&](point a, point b)
-    { return ( cross(P[0], a, b) == 0 ) ? lexLess(a,b): cross(P[0],a,b) > 0 ; });
+    anchor = P[0]; sort(P+1, P+ps, grahamLess);
     for( int i = 0; i < 3; i++ ) H[ans++] = P[i];
     for( int i = 3; i < ps; i++ )
     {
@@ -42,6 +51,7 @@ int findHull( point * P, int ps, point * H )
     return ans;
 }
 
+// Assume polígono ordenado em sentido anti-horário
 bool inConvex( point * P, int ps, point q )
 {
     int lo = 1,
