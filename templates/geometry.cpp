@@ -1,64 +1,104 @@
-#include <bits/stdc++.h>
-#define MAX 1000
-
+#include<bits/stdc++.h>
+#define MP  4005
+#define eps 1e-9
+typedef int cood;
+typedef int point;
+cood x[MP], y[MP];
 using namespace std;
 
-typedef int cood;
-typedef pair<cood, cood> point;
+inline cood cross( point a, point b, point c )
+{ return (x[b]-x[a])*(y[c]-y[b])-(y[b]-y[a])*(x[c]-x[b]); }
 
-point P[MAX];
-int hull[MAX], hs, ps;
+inline cood inner( point a, point b, point c = MP-1 )
+{ return (x[a]-x[c])*(x[b]-x[c]) + (y[a]-y[c])*(y[b]-y[c]); }
 
-cood cP(point a, point b, point c)
+bool lexLess( point a, point b )
+{ return ( x[a]==x[b] ) ? y[a]<y[b]: x[a]<x[b] ; }
+// { return ( fabs(x[a]-x[b]) < eps ) ? y[a]<y[b] : x[a]<x[b] ; }
+
+inline bool between( point a, point b, point c )
+{ return ( cross(a,b,c) == 0 ) && ( inner(a,b,c) <= 0 ) ; }
+
+inline double dist(double ax, double ay, point a)
+{ return sqrt( (ax-x[a])*(ax-x[a]) + (ay-y[a])*(ay-y[a]) ); }
+
+int findHull( point * P, int ps, point * H )
 {
-    // a.f a.s 1
-    // b.f b.s 1
-    // c.f c.s 1
-    return ( 
-            a.first*(b.second - c.second) +
-            a.second*(c.first - b.first) +
-            b.first*c.second - b.second*c.first
-           );
-}
-
-bool properInter(point a, point b, point c, point d)
-{
-    return
-        (
-         ((cP(a, b, c) > 0)^(cP(a, b, d) > 0))
-         &&
-         ((cP(c, d, a) > 0)^(cP(c, d, b) > 0))
-         );
-}
-
-bool grahamLess(point a, point b)
-{
-    cood val = cP( *P, a, b );
-    if( !val )
-        return (a.first) < (b.first);
-    return val > 0;
-}
-
-void grahamScan()
-{
-    // Acha o ponto mais a esquerda
-    int min = 0, i;
-    for(i = 1; i < ps; i++)
-        if( P[i] < P[min] )
-            min = i;
-    swap( P[0], P[min] );
-    // Ordena pontos por angulo
-    sort( P+1, P+ps, grahamLess);
-
-    // Calcula o hull
-    hs = 0;
-    for( i = 0; i < 3; i++ )
-        hull[hs++] = i;
-
-    for( i = 3 ; i < ps; i++ )
+    if( ps < 3 )
     {
-        while( hs > 1 && cP( P[hull[hs-2]], P[hull[hs-1]], P[i]) <= 0 )
-            hs--;
-        hull[hs++] = i;
+        for( int i = 0; i < ps; i++ ) H[i] = P[i];
+        return ps;
     }
+    int ans = 0;
+    iter_swap( P, min_element(P, P+ps, lexLess) );
+    sort(P+1, P+ps, [&](point a, point b)
+    { return ( cross(P[0], a, b) == 0 ) ? lexLess(a,b): cross(P[0],a,b) > 0 ; });
+    for( int i = 0; i < 3; i++ ) H[ans++] = P[i];
+    for( int i = 3; i < ps; i++ )
+    {
+        while( ans > 1 && cross(H[ans-2], H[ans-1], P[i]) <= 0 ) ans--;
+        H[ans++] = P[i];
+    }
+    return ans;
+}
+
+bool inConvex( point * P, int ps, point q )
+{
+    int lo = 1,
+        hi = ps-1;
+    if( ps < 3 ) return between(P[0], P[1], q);
+    while( lo + 1 < hi )
+    {
+        int mid = (lo+hi)/2,
+            val = cross(P[0], P[mid], q);
+        if( val == 0 ) return inner(P[0],P[mid],q) <= 0 ; 
+        if( val > 0 )  lo = mid;
+        else           hi = mid;
+    }
+    return ( cross(P[0] ,P[lo],q) >= 0 ) && 
+           ( cross(P[lo],P[hi],q) >= 0 ) &&
+           ( cross(P[hi],P[0] ,q) >= 0 ) ;
+}
+
+void findCircle( point a, point b, point c , double& ax, double& ay, double& r )
+{
+    double Aab = x[a]-x[b], Bab = y[a]-y[b], Cab = 0.5*( inner(a,a) - inner(b,b) ),
+           Abc = x[b]-x[c], Bbc = y[b]-y[c], Cbc = 0.5*( inner(b,b) - inner(c,c) ),
+           det = Aab*Bbc - Bab*Abc; if( fabs(det) < eps ) return;
+    ax = (Bbc*Cab - Bab*Cbc)/det; ay = (Aab*Cbc - Abc*Cab)/det;
+    r  = dist(ax,ay,a); 
+}
+
+// Se lembre de setar a seed na main!
+// srand( (unsigned) time(0) );
+void spanningCircle( point * P, int ps, double& ax, double& ay, double& r )
+{
+    // Remove pontos iguais
+    sort(P,P+ps, lexLess);
+    ps = unique(P,P+ps,[](point a, point b)
+             { return (x[a]==x[b])&&(y[a]==y[b]); }) - P; 
+    if( ps == 1 ) { ax = x[0]; ay = y[0]; r = 0.0; return; }
+    
+    // Resolve pontos colineares calculando o fecho
+    // point * hull = P; int hs = ps; 
+    point * hull = new point [ps]; int hs = findHull(P, ps, hull);
+
+    random_shuffle(hull, hull+hs);
+    ax = 0.5*(x[hull[0]]+x[hull[1]]); ay = 0.5*(y[hull[0]]+y[hull[1]]);
+    r  = dist(ax,ay,hull[0]); 
+    for( int i = 2; i < hs; i++ )
+        if( dist(ax,ay,hull[i]) > r )
+        {
+            ax = 0.5*(x[hull[0]]+x[hull[i]]); ay = 0.5*(y[hull[0]]+y[hull[i]]);
+            r = dist(ax,ay,hull[i]);
+            for( int j = 1; j < i; j++ )
+                if( dist(ax,ay,hull[j]) > r )
+                {
+                    ax = 0.5*(x[hull[i]]+x[hull[j]]); ay = 0.5*(y[hull[i]]+y[hull[j]]);
+                    r  = dist(ax,ay,hull[i]);
+                    for( int k = 0; k < j; k++ )
+                        if( dist(ax,ay,hull[k]) > r )
+                            findCircle(hull[i],hull[j],hull[k], ax, ay, r);
+                }
+        }
 }
