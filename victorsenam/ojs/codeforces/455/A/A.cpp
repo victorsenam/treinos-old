@@ -29,10 +29,10 @@ int main () {
     }
 
     memo[0] = cnt[0];
-    memo[1] = cnt[1]*2;
+    memo[1] = max(cnt[1]*2, cnt[0]);
 
     for (int i = 2; i < N; i++)
         memo[i] = max(memo[i-2] + ((ll)cnt[i])*((ll)(i+1)), memo[i-1]);
     
-    printf("%d\n", memo[N-1]);
+    printf("%I64d\n", memo[N-1]);
 }
