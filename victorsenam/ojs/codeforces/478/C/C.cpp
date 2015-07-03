@@ -10,15 +10,14 @@ typedef int num;
 #define debug(...) //
 #endif
 
-int c[3];
-int maxi;
+ll c[3];
 
 int main () {
     scanf("%d %d %d", c, c+1, c+2);
+    sort(c, c+3);
 
-    maxi = 0;
-    for (int i = 0; i < 3; i++)
-        maxi = max(max(maxi, min(c[i], (c[(i+1)%2]+c[(i+2)%2]))), c[i]);
-    
-    printf("%d\n", maxi);
+    if (c[2] >= 2*(c[0]+c[1])) 
+        printf("%d\n", c[0]+c[1]);
+    else
+        printf("%d\n", (c[0]+c[1]+c[2])/3);
 }
