@@ -10,14 +10,14 @@ typedef int num;
 #define debug(...) //
 #endif
 
-#define N 50008
+#define N 500008
 
 int n;
 int v[N];
-ll acc[N];
-ll val;
-ll s, r;
 ll res;
+ll s, r;
+int a, b;
+vector<int> ini, end;
 
 int main () {
     scanf("%d", &n);
@@ -33,21 +33,21 @@ int main () {
         return 0;
     }
 
-    acc[n-1] = 0;
     r = 0;
-    for (int i = n - 1; i > 0; i--) {
-        acc[i-1] = acc[i];
+    for (int i = 0; i < n-1; i++) {
         r += v[i];
         if (r == s/3)
-            acc[i-1]++;
+            ini.push_back(i+1);
+        if (r == 2*s/3)
+            end.push_back(i);
     }
-
-    res = 0;
-    r = 0;
-    for (int i = 0; i < n-2; i++) {
-        r += v[i];
-        if (r == s/3)
-            res += acc[i+1];
+    
+    a = b = res = 0;
+    while (a < ini.size() && b < end.size()) {       
+        while (b < end.size() && ini[a] > end[b])
+            b++;
+        res += end.size() - b;
+        a++;
     }
 
     printf("%I64d\n", res);
