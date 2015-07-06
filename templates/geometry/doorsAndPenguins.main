@@ -1,0 +1,40 @@
+int main()
+{
+    int ds, ps, cnt, tc = 1;
+    point D[2001], P[2001], hD[2001], hP[2001];
+    cood ix0, iy0, ix1, iy1;
+    while( scanf("%d %d", &ds, &ps) != EOF && ds && ps )
+    {
+        cnt = 0;
+        if( tc > 1 ) printf("\n");
+        printf("Case %d: ", tc++);
+        for( int i = 0; i < ds; i++ )
+        {
+            scanf("%d %d %d %d", &ix0, &iy0, &ix1, &iy1);
+            x[cnt] = ix0; y[cnt] = iy0; D[4*i+0] = cnt++;
+            x[cnt] = ix0; y[cnt] = iy1; D[4*i+1] = cnt++;
+            x[cnt] = ix1; y[cnt] = iy0; D[4*i+2] = cnt++;
+            x[cnt] = ix1; y[cnt] = iy1; D[4*i+3] = cnt++;
+        }
+        for( int i = 0; i < ps; i++ )
+        {
+            scanf("%d %d %d %d", &ix0, &iy0, &ix1, &iy1);
+            x[cnt] = ix0; y[cnt] = iy0; P[4*i+0] = cnt++;
+            x[cnt] = ix0; y[cnt] = iy1; P[4*i+1] = cnt++;
+            x[cnt] = ix1; y[cnt] = iy0; P[4*i+2] = cnt++;
+            x[cnt] = ix1; y[cnt] = iy1; P[4*i+3] = cnt++;
+        }
+        int hDs = findHull(D, 4*ds, hD),
+            hPs = findHull(P, 4*ps, hP);
+        bool ok = true;
+        for( int i = 0; ok && i < hPs; i++ )
+            ok = !inConvex(hD, hDs, hP[i]);
+        for( int i = 0; ok && i < hDs; i++ )
+            ok = !inConvex(hP, hPs, hD[i]);
+
+        if( ok )
+            printf("It is possible to separate the two groups of vendors.\n");
+        else
+            printf("It is not possible to separate the two groups of vendors.\n");
+    }
+}
