@@ -1,111 +1,81 @@
-#include<bits/stdc++.h>
-
-#define MV 101
-#define N 10
+#include <bits/stdc++.h>
 
 using namespace std;
-typedef int num;
-int a[N], n;
-set<int> s[MV*2+10];
-set<int>::iterator it;
 
+#define M 1024
+#define N 101
 
-int ctOnes(int i) {
-    int r = 0;
-    while (i != 0) {
-        r += i%2;
-        i /= 2;
-    }
-    return r;
+int n, rq, aq, ans, a[12];
+bool ok;
+char memo[N][M];
+
+int one (int val, int mask) {
+    int a = (1<<(val%10))*(val!=0);
+    int b = (1<<(val/10))*(val/10!=0);
+
+    if (a == b)
+        return 0;
+    if ((a|b)&mask != (a|b)) 
+        return 0;
+
+    return (a|b)+1;
 }
 
-bool can (int v, int i) {
-    for (it = s[v].begin(); it != s[v].end(); it++)
-        if (*it & i == *it) 
+int two (int val, int mask) {
+    int rr;
+    for (int i = 1; i <= val/2 + 1; i++) {
+        int a = i;
+        int b = val - i;
+        rr = one(a, mask);
+        if (!rr) 
+            continue;
+        if (one(b, mask-(rr-1))) 
             return 1;
-    return 0;    
+    }
+    return 0;
 }
 
-int main()
-{
-    int at;
-    for (int i = 9; i >= 0; i--) {
-        at = 1 << (i+1);
-        s[i].insert(at);
-        for (int j = i-1; j >= 0; j--) {
-            at += 1 << (j+1);
-            s[j+i].insert(at);
-            s[j*10+i].insert(at);
-            s[i*10+j].insert(at);
-            for (int k = j-1; k >= 0; k--) {
-                at += 1 << (k+1);
-                s[10*i+j+k].insert(at);
-                s[10*j+i+k].insert(at);
-                s[10*k+i+j].insert(at);
-                for (int l = k-1; l >= 0; l--) {
-                    at += 1 << (l+1);
-                    s[10*i+j+10*k+l].insert(at);
-                    s[10*i+j+10*l+k].insert(at);
-                    s[10*i+k+10*j+l].insert(at);
-                    s[10*i+k+10*l+j].insert(at);
-                    s[10*i+l+10*k+j].insert(at);
-                    s[10*i+l+10*j+k].insert(at);
+char fill (int val, int mask) {
+    if (memo[val][mask] != -1)
+        return memo[val][mask];
 
-                    s[10*j+i+10*k+l].insert(at);
-                    s[10*j+i+10*l+k].insert(at);
-                    s[10*j+k+10*i+l].insert(at);
-                    s[10*j+k+10*l+i].insert(at);
-                    s[10*j+l+10*k+i].insert(at);
-                    s[10*j+l+10*i+k].insert(at);
+    if (one(val, mask))
+        return memo[val][mask] = 1;
+    if (two(val, mask))
+        return memo[val][mask] = 1;
 
-                    s[10*k+j+10*i+l].insert(at);
-                    s[10*k+j+10*l+i].insert(at);
-                    s[10*k+i+10*j+l].insert(at);
-                    s[10*k+i+10*l+j].insert(at);
-                    s[10*k+l+10*i+j].insert(at);
-                    s[10*k+l+10*j+i].insert(at);
+    return memo[val][mask] = 0;
+}
 
-                    s[10*l+j+10*k+i].insert(at);
-                    s[10*l+j+10*i+k].insert(at);
-                    s[10*l+k+10*j+i].insert(at);
-                    s[10*l+k+10*i+j].insert(at);
-                    s[10*l+i+10*k+j].insert(at);
-                    s[10*l+i+10*j+k].insert(at);
-                    at -= 1 << (l+1);
-                }
-                at -= 1 << (k+1);
-            }
-            at -= 1 << (j+1);
-        }
-    }
-    //printf("pre\n");
+int main () {
+    memset(memo, -1, sizeof(memo));
     
     int c = 1;
     while (scanf("%d", &n) != EOF && n) {
         for (int i = 0; i < n; i++)
             scanf("%d", a+i);
 
-        int res = (1 << 10) - 1;
-        int resq = 10;
-        for (int i = 0; i < (2<<10); i++) {
-            int atq = ctOnes(i);
-            if (atq > resq) continue;
-            bool ok = 1;
-            for (int j = 0; j < n && ok; j++) {
-                if (!can(a[j], i))
-                    ok = 0;
-            }
-            if (ok) {
-                res = i;
-                resq = atq;
-            }
+        ans = M-1;
+        aq = 10;
+        for (int i = 0; i < M; i++) {
+            rq = 0;
+            for (int j = i; j != 0; j /= 2)
+                rq += j%2;
+
+            ok = 1;
+            for (int j = 0; j < n && ok; j++)
+                ok = ok && fill(a[j], i);
+            
+            if (!ok) continue;
+
+            aq = rq;
+            ans = i;
         }
 
         printf("Case %d:", c++);
-        for (int i = 9; i >= 0; i--) {
-            if ( ( (1 << i) & res ) == (1<<i) )
+        for (int i = 9; i >= 0; i--) 
+            if (((1<<i)&ans)) 
                 printf(" %d", i);
-        }
         printf("\n");
     }
 }
