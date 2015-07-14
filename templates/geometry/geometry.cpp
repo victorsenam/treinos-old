@@ -9,25 +9,21 @@ using namespace std;
 
 inline cood cross( point a, point b, point c )
 { return (x[b]-x[a])*(y[c]-y[b])-(y[b]-y[a])*(x[c]-x[b]); }
-
 inline cood inner( point a, point b, point c = MP-1 )
 { return (x[a]-x[c])*(x[b]-x[c]) + (y[a]-y[c])*(y[b]-y[c]); }
 
 bool lexLess( point a, point b )
 { return ( x[a]==x[b] ) ? y[a]<y[b]: x[a]<x[b] ; }
-// { return ( fabs(x[a]-x[b]) < eps ) ? y[a]<y[b] : x[a]<x[b] ; }
 
 bool grahamLess( point a, point b )
 {
     num val = cross(anchor, a, b);
     if( val == 0 ) return lexLess(a,b);
-    // if( fabs(val) < eps ) return lexLess(a,b);
     return val > 0;
 }
 
 inline bool between( point a, point b, point c )
 { return ( cross(a,b,c) == 0 ) && ( inner(a,b,c) <= 0 ) ; }
-// { return ( fabs(cross(a,b,c)) < eps ) && ( inner(a,b,c) + eps < 0.0 ) ; }
 
 inline double dist(double ax, double ay, point a)
 { return sqrt( (ax-x[a])*(ax-x[a]) + (ay-y[a])*(ay-y[a]) ); }
@@ -68,47 +64,4 @@ bool inConvex( point * P, int ps, point q )
     return ( cross(P[0] ,P[lo],q) >= 0 ) && 
            ( cross(P[lo],P[hi],q) >= 0 ) &&
            ( cross(P[hi],P[0] ,q) >= 0 ) ;
-}
-
-void findCircle( point a, point b, point c , double& ax, double& ay, double& r )
-{
-    double Aab = x[a]-x[b], Bab = y[a]-y[b], Cab = 0.5*( inner(a,a) - inner(b,b) ),
-           Abc = x[b]-x[c], Bbc = y[b]-y[c], Cbc = 0.5*( inner(b,b) - inner(c,c) ),
-           det = Aab*Bbc - Bab*Abc; if( fabs(det) < eps ) return;
-    ax = (Bbc*Cab - Bab*Cbc)/det; ay = (Aab*Cbc - Abc*Cab)/det;
-    r  = dist(ax,ay,a); 
-}
-
-// Se lembre de setar a seed na main!
-// srand( (unsigned) time(0) );
-void spanningCircle( point * P, int ps, double& ax, double& ay, double& r )
-{
-    // Remove pontos iguais
-    sort(P,P+ps, lexLess);
-    ps = unique(P,P+ps,[](point a, point b)
-             { return (x[a]==x[b])&&(y[a]==y[b]); }) - P; 
-    if( ps == 1 ) { ax = x[0]; ay = y[0]; r = 0.0; return; }
-    
-    // Resolve pontos colineares calculando o fecho
-    // point * hull = P; int hs = ps; 
-    point * hull = new point [ps]; int hs = findHull(P, ps, hull);
-
-    random_shuffle(hull, hull+hs);
-    ax = 0.5*(x[hull[0]]+x[hull[1]]); ay = 0.5*(y[hull[0]]+y[hull[1]]);
-    r  = dist(ax,ay,hull[0]); 
-    for( int i = 2; i < hs; i++ )
-        if( dist(ax,ay,hull[i]) > r )
-        {
-            ax = 0.5*(x[hull[0]]+x[hull[i]]); ay = 0.5*(y[hull[0]]+y[hull[i]]);
-            r = dist(ax,ay,hull[i]);
-            for( int j = 1; j < i; j++ )
-                if( dist(ax,ay,hull[j]) > r )
-                {
-                    ax = 0.5*(x[hull[i]]+x[hull[j]]); ay = 0.5*(y[hull[i]]+y[hull[j]]);
-                    r  = dist(ax,ay,hull[i]);
-                    for( int k = 0; k < j; k++ )
-                        if( dist(ax,ay,hull[k]) > r )
-                            findCircle(hull[i],hull[j],hull[k], ax, ay, r);
-                }
-        }
 }
