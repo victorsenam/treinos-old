@@ -9,11 +9,12 @@ double pre[(N+N/8)+K*K], val;
 int mini, maxi, w, l, size;
 
 double calc(int ind) {
+    /*
     double ret = pre[ind/K];
     for (int i = ind - ind%K + 1; i <= ind; i++)
         ret += 1.0/((double)i);
     return ret;
-/*
+    */
     if (ind > 10000)
         return log((double) ind);
 
@@ -22,13 +23,13 @@ double calc(int ind) {
         ret += 1.0/(double)i;
     }
     return ret;
-*/
 }
 
 int main () {
     pre[0] = 0.0;
     val = 1.0;
     size = 0;
+    /*
     for (int i = 1; i < (N+N/8)+K*K; i++) {
         if (i%K)
             pre[size+1] += 1.0/val;
@@ -38,7 +39,8 @@ int main () {
         }
         val += 1.0;
     }
-        
+    */
+    
     int c = 0;
     while (scanf("%d %d", &w, &l) != EOF && (w || l)) {
         printf("Case %d:\n", ++c);
