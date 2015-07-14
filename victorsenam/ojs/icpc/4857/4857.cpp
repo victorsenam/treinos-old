@@ -15,8 +15,7 @@ int pd (int i, int j) {
     if (memo[i][j] != -1)
         return memo[i][j];
 
-    int & m = memo[i][j];
-    m = pd(i+1, j)+1;
+    int m = pd(i+1, j)+1;
     int res = 1;
     int ind = i+1;
     int last = i+1;
@@ -30,7 +29,8 @@ int pd (int i, int j) {
         ind++;
     }
 
-    return m;
+    memo[i][j] = m;
+    return memo[i][j];
 }
 
 int main () {
