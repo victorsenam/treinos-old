@@ -11,40 +11,40 @@ int que[N];
 int n, m, k, t, a, b, ss;
 int max1, max2, lc, mini;
 
-void dfs(int v) {
-    for (int i = 0; i < adj[v].size(); i++) {
-        if (hei[adj[v][i]] == -1) 
-            continue;
-        int par = adj[v][i];
-        for (int i = 0; i < 18; i++) {
-            ant[v][i] = par;
-            par = ant[par][i];
-        }
-    }
+void dfs(int v, int p, int h) {
+    hei[v] = h;
+
+    ant[v][0] = p;
+    for (int i = 1; i < 18; i++)
+        ant[v][i] = ant[ant[v][i-1]][i-1];
 
     for (int i = 0; i < adj[v].size(); i++) {
-        if (hei[adj[v][i]] != -1)
+        if (adj[v][i] == p)
             continue;
-        hei[adj[v][i]] = hei[v]+1;
-        dfs(adj[v][i]);
+        dfs(adj[v][i], v, h+1);
     }
 }
 
 int getLca(int v, int u) {
-    if (v == u) return v;
     if (hei[v] > hei[u]) swap(u, v);
 
     if (hei[u] > hei[v]) {
-        for (int i = 17; i >= 0; i--)
-            if (hei[ant[u][i]] >= hei[v]) 
-                return getLca(v, ant[u][i]);
+        for (int i = 17; i >= 0; i--) {
+            if (hei[ant[u][i]] >= hei[v])
+                u = ant[u][i];
+        }
     }
 
-    for (int i = 17; i > 0; i++)
-        if (ant[v][i] != ant[u][i])
-            return getLca(ant[v][i], ant[u][i]);
+    if (v == u) return v;
 
-    return getLca(ant[v][0], ant[u][0]);
+    for (int i = 17; i >= 0; i--) {
+        if (ant[v][i] != ant[u][i]) {
+            v = ant[v][i];
+            u = ant[u][i];
+        }
+    }
+            
+    return ant[v][0];
 }
 
 int main () {
@@ -68,8 +68,7 @@ int main () {
             adj[b].push_back(a);
         }
         
-        hei[0] = 0;
-        dfs(0);
+        dfs(0, 0, 0);
 
         scanf("%d", &m);
         while (m--) {
@@ -91,10 +90,15 @@ int main () {
             }
 
             for (int i = 0; i < k; i++) {
-                if (que[i] == max1)
+                if (que[i] == max1 || getLca(que[i], max1) == que[i])
                     continue;
                 if (max2 == -1 || hei[que[i]] > hei[max2])
                     max2 = que[i];
+            }
+
+            if (max2 == -1) {
+                printf("Yes\n");
+                continue;
             }
 
             lc = getLca(max1, max2);
