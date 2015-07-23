@@ -79,11 +79,8 @@ int main () {
             else {
                 tr[aux.est][aux.tem][aux.dir] = 1;
                 aux.est += 1 - 2*aux.dir;
+                if (aux.est < 0 || aux.est >= n) continue;
                 aux.tem += a[aux.est + aux.dir];
-                if (aux.est == n-1)
-                    aux.dir = 1;
-                else if (aux.est == 0)
-                    aux.dir = 0;
                 q.push(aux);
             }
         }
