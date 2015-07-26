@@ -19,26 +19,22 @@ vector<enemy> ene;
 int mat[N][N], n, m;
 enemy aux;
 int cnt, last, att;
-int lastCol[N];
 char c;
-vector<int> adj[4*N];
-int val[4*N]; // -1 false, 0 unset, 1 true
-int seen[4*N];
-int seenCmp[4*N];
-int from[4*N];
-int pre[4*N];
-int ret[4*N];
+vector<int> adj[4*N*N];
+int val[4*N*N]; // -1 false, 0 unset, 1 true
+int seen[4*N*N];
+int seenCmp[4*N*N];
+int from[4*N*N];
+int pre[4*N*N];
+int ret[4*N*N];
 int ord;
 stack<int> st;
-vector<int> comps[4*N];
+vector<int> comps[4*N*N];
 int cmps;
 
 void color(int i, int c) {
-    if (val[i]) {
-        if (val[i] != c)
-            printf("FAIL\n");
+    if (val[i])
         return;
-    }
     val[i] = c;
 
     color(i^1, (-1)*c);
