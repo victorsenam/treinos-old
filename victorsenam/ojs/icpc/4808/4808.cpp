@@ -20,21 +20,21 @@ int pd (int dig, int pos, bool free, bool lz) {
     int mul = 1;
     for (int i = 0; i < pos; i++)
         mul *= 10;
-    mul /= 10;
+    int x = (n/mul)%10;
 
     if (free) {
         if (dig || lz)
             m = 10*pd(dig, pos-1, free, lz) + mul;
         else
             m = 9*pd(dig, pos-1, free, 1) + pd(dig, pos-1, free, 0);
-    } else if (x[pos]) {
+    } else if (x) {
         if (dig || lz)
-            m = x[pos]*pd(dig, pos-1, 1, lz) + pd(dig, pos-1, 0, lz) + mul;
+            m = x*pd(dig, pos-1, 1, lz) + pd(dig, pos-1, 0, lz) + mul*(x>dig) + (n%mul+1)*(x==dig);
         else
-            m = (x[pos]-1)*pd(dig, pos-1, 1, 1) + pd(dig, pos-1, 0, 1) + pd(dig, pos-1, 0, 0);
+            m = (x-1)*pd(dig, pos-1, 1, 1) + pd(dig, pos-1, 0, 1) + pd(dig, pos-1, 1, 0);
     } else {
         m = pd(dig, pos-1, 0, lz);
-        if (dig || lz)
+        if (!dig && lz)
             m += mul;
     }
 
@@ -43,24 +43,15 @@ int pd (int dig, int pos, bool free, bool lz) {
 
 int main () {
     while (scanf("%d %d", &n, &m) != EOF && (n || m)) {
-        siz = 0;
-        while (n > 0) {
-            x[siz++] = n%10;
-            n /= 10;
-        }
-
-        for (int i = 0; i < n; i++)
-            res[i] = pd(i, siz, 0, 0);
+        n--;
+        for (int i = 0; i < 10; i++)
+            res[i] = pd(i, 9, 0, 0);
         turn++;
         
-        siz = 0;
-        while (m > 0) {
-            x[siz++] = m%10;
-            m /= 10;
-        }
-        for (int i = 0; i < 10; i++)
-            printf("%d ", pd(i, siz, 0, 0) - res[i]);
+        n = m;
+        for (int i = 0; i < 9; i++)
+            printf("%d ", pd(i, 9, 0, 0) - res[i]);
+        printf("%d\n", pd(9, 9, 0, 0) - res[9]);
         turn++;
-        printf("\n");
     }
 }
