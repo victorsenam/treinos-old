@@ -2,7 +2,7 @@
 
 using namespace std;
 
-int n, m, x[10], siz;
+int n, nx, x[10], siz;
 int memo[10][10][2][2];
 int visi[10][10][2][2];
 int turn;
@@ -14,7 +14,7 @@ int pd (int dig, int pos, bool free, bool lz) {
 
     int & m = memo[dig][pos][free][lz];
     if (visi[dig][pos][free][lz] == turn)
-        return m;
+        return memo[dig][pos][free][lz];
     visi[dig][pos][free][lz] = turn;
 
     int mul = 1;
@@ -35,20 +35,22 @@ int pd (int dig, int pos, bool free, bool lz) {
     } else {
         m = pd(dig, pos-1, 0, lz);
         if (!dig && lz)
-            m += mul;
+            m += n%mul+1;
     }
 
     return m;
 }
 
 int main () {
-    while (scanf("%d %d", &n, &m) != EOF && (n || m)) {
+    turn = 1;
+    while (scanf("%d %d", &n, &nx) != EOF && (n || nx)) {
         n--;
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 10; i++) {
             res[i] = pd(i, 9, 0, 0);
+        }
         turn++;
         
-        n = m;
+        n = nx;
         for (int i = 0; i < 9; i++)
             printf("%d ", pd(i, 9, 0, 0) - res[i]);
         printf("%d\n", pd(9, 9, 0, 0) - res[9]);
