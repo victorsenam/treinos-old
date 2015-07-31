@@ -38,7 +38,6 @@ int main () {
     for (int i = 2; i < 65; i++) {
         int cnt = __builtin_popcount(i);
         val[i] = val[cnt]+1;
-        printf("%d ", val[i]);
     }
     memset(memo, 0, sizeof(memo));
     memset(vis, 0, sizeof(vis));
