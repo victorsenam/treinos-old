@@ -1,4 +1,4 @@
-nclude<bits/stdc++.h>
+#include<bits/stdc++.h>
 using namespace std;
 typedef int num;
 typedef int node;
