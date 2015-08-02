@@ -1,69 +1,69 @@
-#include<bits/stdc++.h>
+nclude<bits/stdc++.h>
 using namespace std;
 typedef int num;
 typedef int node;
 typedef int edge;
-const int MV = 10005;
-const int ME = 100010;
+const int MV = 10001;
+const int ME = 100002;
 
-int adj[MV], pend[MV], sol[MV], Q[MV];
-int nxt[ME], to[ME], es;
-num n,h, ss, qf, qb;
-bool cyc, multSort;
+int head[MV], pre[MV], pos[MV], top[MV], prei, posi, vs;
+int to[ME], next[ME], es;
+int cyc, unq, m;
+
+int dfs(node u)
+{
+    int ans = 0;
+    pre[u] = prei++;
+    for(edge e=head[u];!ans && e>=0;e=next[e])
+        if( pre[to[e]] == -1 )
+            cyc |= dfs(to[e]);
+        else if( pos[to[e]] == -1 )
+            cyc = 1;
+    pos[u] = posi;
+    top[posi++] = u;
+    return ans;
+}
 
 int main()
 {
     int tc;
-    ios::sync_with_stdio(false);
-    cin>>tc;
+    scanf("%d", &tc);
     while(tc--)
     {
-        memset(adj, -1, sizeof adj);
-        memset(pend, 0, sizeof pend);
-        es = 0;
-        cin >> n >> h;
-        for(int i=0;i<h;i++)
+        scanf("%d %d", &vs, &m);
+        es=0;
+        for(node v=0;v<vs;v++)
+            pre[v] = pos[v] = head[v] = -1;
+        while(m--)
         {
-            node a,b;
-            cin >> a >> b;
-            a--;b--;
-            pend[b]++;
-            to[es] = b; nxt[es] = adj[a]; adj[a] = es++;
+            node u,v; scanf("%d %d", &u, &v);
+            u--;v--; to[es] = v;
+            next[es] = head[u]; head[u] = es++;
         }
-        ss = 0; qf = 0; qb = 0;
-        multSort = false;
-        cyc      = false;
-        while( ss < n )
+        cyc = 0;
+        prei = posi = 0;
+        for(node v=0;!cyc && v<vs;v++)
+            if( pre[v] == -1 )
+                cyc |= dfs(v);
+        unq = 1;
+        for(int i=posi-1;!cyc && unq && i>0;i--)
         {
-            for(node v=0;v<n;v++)
-                if( pend[v] == 0 )
-                    Q[qb++] = v;
-
-            cyc = (qf == qb);
-            multSort |= (qb-qf > 1);
-            if( cyc ) break; 
-            else 
-            while( qf < qb )
-            {
-                sol[ss++] = Q[qf++];
-                pend[sol[ss-1]]--;
-                for(edge uv=adj[sol[ss-1]]; uv>=0 ; uv = nxt[uv])
-                    pend[to[uv]]--;
-            }
+            int found=0;
+            for(edge e=head[top[i]];!found && e>=0;e=next[e])
+                found |= (to[e] == top[i-1]);
+            unq &= found;
         }
-
         if( cyc )
-            cout << "recheck hints\n";
-        else if( multSort )
-            cout << "missing hints\n";
+            printf("recheck hints\n");
+        else if( !unq )
+            printf("missing hints\n");
         else
         {
-            for(int i=0;i<n;i++)
-            {
-                if(i) cout << " ";
-                cout << sol[i]+1;
-            }
-            cout << "\n";
+            while( posi > 0 )
+                printf("%d ", top[--posi]+1);
+            printf("\n");
         }
+
     }
 }
+
