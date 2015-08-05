@@ -1,0 +1,19 @@
+#define MP 20004
+typedef double cood;
+int main()
+{
+    srand( (unsigned) time(0) );
+    int n, tc = 1; point Cities[MP];
+    while( scanf("%d", &n) != EOF && n )
+    {
+        printf("Instancia %d\n", tc++);
+        for( int i = 0; i < n; i++ )
+        {
+            scanf("%lf %lf", x+i, y+i);
+            Cities[i] = i;
+        }
+        double ax, ay, ar;
+        spanningCircle(Cities, n, ax, ay, ar);
+        printf("%.2lf %.2lf %.2lf\n\n", ax, ay, ar);
+    }
+}

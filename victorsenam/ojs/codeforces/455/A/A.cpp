@@ -1,6 +1,8 @@
 #include <bits/stdc++.h>
 
 using namespace std;
+typedef long long int ll;
+typedef unsigned long long int ull;
 typedef int num;
 #ifndef ONLINE_JUDGE
 #define debug(...) fprintf(stderr, "%3d| ", __LINE__); fprintf(stderr, __VA_ARGS__); fprintf(stderr, "\n")
@@ -8,6 +10,7 @@ typedef int num;
 #define debug(...) //
 #endif
 
+<<<<<<< HEAD
 #define N 100007
 
 int n;
@@ -33,22 +36,27 @@ int pd (int i) {
 
     return memo[i];
 }
+#define N 100008
+
+int n;
+int a;
+int cnt[N];
+ll memo[N];
 
 int main () {
-    scanf("%d", &n);
+    for (int i = 0; i < N; i++)
+        cnt[i] = 0;
 
     for (int i = 0; i < n; i++) {
-        scanf("%d", v+i);
-        memo[i] = 0;
+        scanf("%d", &a);
+        cnt[a-1]++;
     }
 
-    sort(v, v+n);
+    memo[0] = cnt[0];
+    memo[1] = max(cnt[1]*2, cnt[0]);
 
-    for (int i = 0; i <= v[n-1]; i++)
-        s[i] = 0;
-
-    for (int i = 0; i < n; i++)
-        s[v[i]] = max(s[v[i]], i);
-
-    printf("%d\n", pd(0));
+    for (int i = 2; i < N; i++)
+        memo[i] = max(memo[i-2] + ((ll)cnt[i])*((ll)(i+1)), memo[i-1]);
+    
+    printf("%I64d\n", memo[N-1]);
 }
