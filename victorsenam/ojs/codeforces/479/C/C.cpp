@@ -23,13 +23,13 @@ int main () {
 
     sort(v, v+n);
 
-    maxi = INT_MAX;
+    maxi = v[n-1].second;
     ok = 1;
     for (int i = n - 1; i >= 0 && ok; i--) {
-        if (maxi >= v[i].second)
-            maxi = v[i].second;
-        else if (maxi >= v[i].first)
+        if (maxi >= v[i].first)
             maxi = v[i].first;
+        else if (maxi >= v[i].second)
+            maxi = v[i].second;
         else
             ok = 0;
     }
