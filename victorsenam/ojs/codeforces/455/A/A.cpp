@@ -10,6 +10,32 @@ typedef int num;
 #define debug(...) //
 #endif
 
+<<<<<<< HEAD
+#define N 100007
+
+int n;
+int v[N], s[N], memo[N];
+
+int pd (int i) {
+    int r = 0;
+    int k;
+
+    if (i >= n) return 0;
+    if (memo[i]) return memo[i];
+
+    k = s[v[i]] + 1;
+
+    for (int j = i; v[j] == v[i]; j++) {
+        r += v[i];
+
+        if (v[j - i + s[v[i]] + 1] == v[i] + 1)
+            k = j-i+s[v[i]]+1;
+
+        memo[i] = max(memo[i], r + pd(k));
+    }
+
+    return memo[i];
+}
 #define N 100008
 
 int n;
@@ -18,8 +44,6 @@ int cnt[N];
 ll memo[N];
 
 int main () {
-    scanf("%d", &n);
-
     for (int i = 0; i < N; i++)
         cnt[i] = 0;
 
