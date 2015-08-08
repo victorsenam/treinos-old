@@ -14,28 +14,22 @@ typedef int num;
 
 int n;
 int a, m;
-int scr[N][2];  // score at time
-int tim[N][2];  // time at score
+int scr[2][N];  // score at time
 int ls;         // last to score
 
 int main () {
     scanf("%d", &n);
     scr[0][0] = scr[0][1] = 0;
-    for (int i = 0; i < n; i++)
-        tim[i][0] = tim[i][1] = n;
     for (int i = 0; i < n; i++) {
         scanf("%d", &a);
         a--;
         ls = a;
 
-        scr[i][a]++;
-        scr[i+1][0] = scr[i][0];
-        scr[i+1][1] = scr[i][1];
-
-        tim[scr[i][a]][a] = i;
+        scr[a][i+1] = scr[a][i] + 1;
+        scr[a^1][i+1] = scr[a^1][i];
     }
 
-    for (int t = 0; t < n; t++) {
+    for (int t = 1; t <= n; t++) {
         int last = 0;
         int nx[2];
         int ss[2];
@@ -43,7 +37,7 @@ int main () {
 
         while (last < n-1) {
             for (int i = 0; i < 2; i++)
-                nx[i] = tim[scr[last+t]][i];
+                nx[i] = lower_bound(scr[i], src[i]+n+1, src[last][i]+t);
 
             if (nx[0] == n && nx[1] == n)
                 break;
