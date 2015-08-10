@@ -16,6 +16,7 @@ int n;
 int a, m;
 int scr[2][N];  // score at time
 int ls;         // last to score
+vector<pair<int, int> > res;
 
 int main () {
     scanf("%d", &n);
@@ -32,30 +33,34 @@ int main () {
     for (int t = 1; t <= n; t++) {
         int last = 0;
         int nx[2];
-        int ss[2];
-        int s;
+        int ss[2] = {0,0};
+        int ls = 0;
 
-        while (last < n-1) {
+        while (last < n) {
             for (int i = 0; i < 2; i++)
-                nx[i] = lower_bound(scr[i], src[i]+n+1, src[last][i]+t);
-
-            if (nx[0] == n && nx[1] == n)
-                break;
+                nx[i] = lower_bound(scr[i], scr[i]+n+1, scr[i][last]+t) - scr[i];
 
             if (nx[0] < nx[1]) {
-                ls = 0;
                 ss[0]++;
                 last = nx[0];
-            } else {
-                ls = 1;
+                ls = 0;
+            } else if (nx[0] > nx[1]) {
                 ss[1]++;
                 last = nx[1];
-            }
+                ls = 1;
+            } else
+                break;
         }
 
-        if (last < n-1 || ss[ls] < ss[ls^1])
+        if (last < n || ss[ls] <= ss[ls^1])
             continue;
         else
-            printf("%d %d\n", ss[ls], t);
+            res.push_back(make_pair(ss[ls], t));
     }
+
+    sort(res.begin(), res.end());
+
+    printf("%d\n", res.size());
+    for (int i = 0; i < res.size(); i++)
+        printf("%d %d\n", res[i].first, res[i].second);
 }
