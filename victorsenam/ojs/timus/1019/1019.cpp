@@ -2,53 +2,63 @@
 
 using namespace std;
 
-#define ff first
-#define ss second
-
 const int MAX = 1000000001;
 
-set<int> s[2];
-set<int>::iterator bn[2][2], it[2];
-int a, b, n, cc, ce;
 char e;
+int n;
+int a, b, c;
+bool lc;
+map<int, bool> mp;
+map<int, bool>::iterator it, ls;
+map<int, bool>::iterator lo, hi;
 
 int main () {
     scanf("%d", &n);
-
-    s[0].insert(0);
-    s[1].insert(MAX);
+    mp[-1] = 0;
+    mp[0] = 1;
+    mp[MAX] = 0;
 
     while (n--) {
         scanf("%d %d %c", &a, &b, &e);
+        c = (e == 'w');
+        it = mp.lower_bound(b);
+        it--;
 
-        cc = (e == 'w');
-        
-        for (int k = 0; k < 2; k++) {
-            bn[k][0] = s[k].lower_bound();
-            bn[k][1] = s[k].upper_bound();
-        }
+        mp[a] = c;
+        mp[b] = it->second;
 
-        if (s[0][1] == s[0].begin())
-            ce = 1;
-        else if (s[1][1] == s[1].begin())
-            ce = 0;
-        else {
-            for (int k = 0; k < 2; k++) {
-                it[k] = bn[k][0];
-                it[k]--;
-            }
-            
-            if (*it[0] < *it[1])
-                ce = 1;
-            else
-                ce = 0;
-        }
-
-        for (int k = 0; k < 2; k++)
-            for (it[k] = bn[k][0]; it[k] != bn[k][1]; it[k]++)
-                s[k].erase(it[k]);
-
-        it[cc] = s[cc].insert(a);
-        it[ce] = s[ce].insert(b);
+        lo = mp.find(a);
+        lo++;
+        hi = mp.find(b);
+        while (lo != hi)
+            mp.erase(lo++);
     }
+
+    lc = 0;
+    for (it = mp.begin(); it != mp.end(); it++) {
+        if (it->second == lc)
+            mp.erase(it);
+        else
+            lc = !lc;
+    }
+    
+    ls = mp.begin();
+    int ma, mb;
+    ma = mb = 0;
+    for (it = mp.begin(); it != mp.end(); it++) {
+        if (it == mp.begin())
+            continue;
+
+        if (ls->second == 1 && it->first - ls->first > mb - ma) {
+            ma = ls->first;
+            mb = it->first;
+        }
+    }
+
+    if (ls->second == 1 && MAX - ls->first > mb - ma) {
+        ma = ls->first;
+        mb = MAX;
+    }
+
+    printf("%d %d\n", ma, mb);
 }
