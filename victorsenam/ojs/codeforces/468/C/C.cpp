@@ -3,49 +3,38 @@
 using namespace std;
 
 typedef unsigned long long int num;
-const int P = 20;
+typedef long long int ll;
+const int P = 22;
 
 num n, a;
 int turn;
-num memo[P][10][2];
-int vis[P][10][2];
+num memo[P][2][187];
+int vis[P][2][187];
+char str[P];
 
-num solve (int pos, int dig, bool free) {
-    if (pos == 0)
-        return (free||((n%10)>=dig));
-
-    if (vis[pos][dig][free] == turn)
-        return memo[pos][dig][free];
-
-    vis[pos][dig][free] = turn;
-    num & m = memo[pos][dig][free];
-
-    num mul = 1;
-    for (int i = 0; i < pos; i++)
-        mul *= 10;
-    int val = (n/mul)%10;
-
+num solve (int pos, bool pre, int sum) {
+    if (str[pos] == '\0')
+        return sum;
+    
+    num & m = memo[pos][pre][sum];
+    if (vis[pos][pre][sum] == turn)
+        return m;
+    vis[pos][pre][sum] = turn;
+    
     m = 0;
-    if (free) {
-        m = 10*solve(pos-1, dig, free) + mul;
-    } else {
-        m = solve(pos-1, dig, 0);
-        if (val)
-            m += val*solve(pos-1, dig, 1);
-        if (val > dig)
-            m += mul;
-        else if (val == dig)
-            m += n%mul+1;
+    for (int i = 0; i < 10; i++) {
+        if (pre && i > str[pos] - '0')
+            break;
+        m += solve(pos+1, (i == str[pos]-'0')&&pre, sum+i);
     }
 
     return m;
 }
 
 num ss() {
-    num res = 0;
-    for (int i = 1; i < 10; i++)
-        res += i*solve(18, i, 0);
-    return res;
+    turn++;
+    sprintf(str, "%I64u\0", n);
+    return solve(0, 1, 0);
 }
 
 num countDig (num n) {
@@ -58,13 +47,12 @@ num countDig (num n) {
 }
 
 int main () {
-    scanf("%llu", &a);
-    num lo = 0ull;
-    num hi = 1000000000000000007ull;
+    scanf("%I64u", &a);
+    num lo = 1ull;
+    num hi = 100000000000000000ull;
     num ans = 0;
 
     while (lo < hi) {
-        turn++;
         n = (hi+lo)/2;
         ans = ss();
         //printf("%llu: %llu\n", n, ans);
@@ -73,41 +61,20 @@ int main () {
         else
             lo = n+1;
     }
-    hi = n;
+
+    hi = lo;
+    n = lo;
+    ans = ss()%a;
+    ll res = ans;
     lo = 1ull;
-    num rr;
 
-    printf("%llu\n", ans);
-
-    while (ans != a) {
-        //printf("%llu [%llu,%llu]\n", ans, lo, hi);
-        if (ans > a)
-            ans -= countDig(lo++);
+    //printf("[%llu, %llu] %lld\n", lo, hi, res);
+    while (res) {
+        if (res > 0)
+            res -= countDig(lo++);
         else
-            ans += countDig(++hi);
-/*
-        turn++;
-        n = hi;
-        rr = ss();
-
-        turn++;
-        n = lo-1;
-        rr -= ss();
-*/
-
- //       if (rr != ans)
- //           printf("FAIL %llu ~ %llu [%llu,%llu]\n", ans, rr, lo, hi);
+            res += countDig(++hi);
     }
 
-    printf("A%llu\n", ans);
-    n = hi;
-    turn++;
-    ans = ss();
-
-    n = lo-1;
-    turn++;
-    ans -= ss();
-    printf("B%llu\n", ans);
-    
-    printf("%llu %llu\n", lo, hi);
+    printf("%I64u %I64u\n", lo, hi);
 }
