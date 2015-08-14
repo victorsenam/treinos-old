@@ -21,11 +21,11 @@ int main () {
     while (n--) {
         scanf("%d %d %c", &a, &b, &e);
         c = (e == 'w');
-        it = mp.lower_bound(b);
+        it = mp.upper_bound(b);
         it--;
 
-        mp[a] = c;
         mp[b] = it->second;
+        mp[a] = c;
 
         lo = mp.find(a);
         lo++;
@@ -35,7 +35,9 @@ int main () {
     }
 
     lc = 0;
-    for (it = mp.begin(); it != mp.end(); it++) {
+    for (it = mp.begin(); it != mp.end(); it = ls) {
+        ls = it;
+        ls++;
         if (it->second == lc)
             mp.erase(it);
         else
@@ -53,6 +55,7 @@ int main () {
             ma = ls->first;
             mb = it->first;
         }
+        ls = it;
     }
 
     if (ls->second == 1 && MAX - ls->first > mb - ma) {
