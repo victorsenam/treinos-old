@@ -2,51 +2,69 @@
 
 using namespace std;
 
-const int MAX = 1000000001;
+const int MAX = 1000000000;
 const int N = 10007;
 
-struct ran {
-    int ini, fim, ind;
-    bool cor;
-};
+int n;
+int a, b, maxa, maxb, ls;
+bool c;
+char e;
+map<int, bool> mp;
+map<int, bool>::iterator it, jt, kt;
 
-bool operator < (const ran & a, const ran & b) {
-    return a.ind > b.ind;
-}
-
-vector<evt> sim[N];
-set<evt> valid;
-map<int, int> times;
-map<int, int>::iterator it;
-
-inline ran ranm (int ini, int fim, int ind, bool cor) {
-    ran t;
-    t.ini = ini;
-    t.fim = fim;
-    t.ind = ind;
-    t.cor = cor;
-    return t;
+bool getColor (int i) {
+    it = mp.upper_bound(i);
+    it--;
+    return it->second;
 }
 
 int main () {
     scanf("%d", &n);
-    for (int i = 1; i <= n; i++) {
-        scanf("%d %d %c", &a, &b, &e);
-        it = times.find(a);
 
-        if (it == times.end()) {
-            times[a] = times.size()-1;
-            sim[times.size()-1].push_back(ranm(a, b, i, e=='w'));
-        } else {
-            sim[it->second].push_back(ranm(a, b, i, e=='w'));
+    mp[0] = 1;
+    mp[MAX] = 0;
+
+    while (n--) {
+        scanf("%d %d %c", &a, &b, &e);
+
+        c = getColor(b);
+
+        mp[a] = (e == 'w');
+        mp[b] = c;
+
+        it = mp.lower_bound(a);
+        jt = mp.lower_bound(b);
+        it++;
+
+        while (it != jt) {
+            kt = it;
+            it++;
+            mp.erase(kt);
         }
     }
 
-    for (it = times.begin(); it != times.end(); it++) {
-        for (int j = 0; j < sim[it->second].size(); j++)
-            valid.insert(sim[it->second][j]);
+    it = mp.begin();
+    jt = mp.end();
+    c = 1;
+    maxa = maxb = 0;
+
+    while (it != jt) {
+        while (it != jt && !it->second)
+            it++;
+        if (it == mp.end())
+            break;
         
-        while (valid.size() && valid.begin()->fim <= it->second)
-            valid.erase(valid.begin());
+        kt = it;
+        while (kt != jt && kt->second)
+            kt++;
+
+        if (maxb - maxa < kt->first - it->first) {
+            maxa = it->first;
+            maxb = kt->first;
+        }
+
+        it = kt;
     }
+
+    printf("%d %d\n", maxa, maxb);
 }
