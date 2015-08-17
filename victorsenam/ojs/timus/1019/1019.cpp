@@ -3,65 +3,50 @@
 using namespace std;
 
 const int MAX = 1000000001;
+const int N = 10007;
 
-char e;
-int n;
-int a, b, c;
-bool lc;
-map<int, bool> mp;
-map<int, bool>::iterator it, ls;
-map<int, bool>::iterator lo, hi;
+struct ran {
+    int ini, fim, ind;
+    bool cor;
+};
+
+bool operator < (const ran & a, const ran & b) {
+    return a.ind > b.ind;
+}
+
+vector<evt> sim[N];
+set<evt> valid;
+map<int, int> times;
+map<int, int>::iterator it;
+
+inline ran ranm (int ini, int fim, int ind, bool cor) {
+    ran t;
+    t.ini = ini;
+    t.fim = fim;
+    t.ind = ind;
+    t.cor = cor;
+    return t;
+}
 
 int main () {
     scanf("%d", &n);
-    mp[-1] = 0;
-    mp[0] = 1;
-    mp[MAX] = 0;
-
-    while (n--) {
+    for (int i = 1; i <= n; i++) {
         scanf("%d %d %c", &a, &b, &e);
-        c = (e == 'w');
-        it = mp.upper_bound(b);
-        it--;
+        it = times.find(a);
 
-        mp[b] = it->second;
-        mp[a] = c;
-
-        lo = mp.find(a);
-        lo++;
-        hi = mp.find(b);
-        while (lo != hi)
-            mp.erase(lo++);
-    }
-
-    lc = 0;
-    for (it = mp.begin(); it != mp.end(); it = ls) {
-        ls = it;
-        ls++;
-        if (it->second == lc)
-            mp.erase(it);
-        else
-            lc = !lc;
-    }
-    
-    ls = mp.begin();
-    int ma, mb;
-    ma = mb = 0;
-    for (it = mp.begin(); it != mp.end(); it++) {
-        if (it == mp.begin())
-            continue;
-
-        if (ls->second == 1 && it->first - ls->first > mb - ma) {
-            ma = ls->first;
-            mb = it->first;
+        if (it == times.end()) {
+            times[a] = times.size()-1;
+            sim[times.size()-1].push_back(ranm(a, b, i, e=='w'));
+        } else {
+            sim[it->second].push_back(ranm(a, b, i, e=='w'));
         }
-        ls = it;
     }
 
-    if (ls->second == 1 && MAX - ls->first > mb - ma) {
-        ma = ls->first;
-        mb = MAX;
+    for (it = times.begin(); it != times.end(); it++) {
+        for (int j = 0; j < sim[it->second].size(); j++)
+            valid.insert(sim[it->second][j]);
+        
+        while (valid.size() && valid.begin()->fim <= it->second)
+            valid.erase(valid.begin());
     }
-
-    printf("%d %d\n", ma, mb);
 }
