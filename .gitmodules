@@ -1,0 +1,3 @@
+[submodule "caderno"]
+	path = caderno
+	url = https://github.com/victorsenam/code-template-notebook

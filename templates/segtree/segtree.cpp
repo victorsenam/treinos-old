@@ -21,8 +21,8 @@ struct seg {
         sum[root] = 0;
         debug("Build : %d[%d,%d)", root, e, d);
         if (d - e == 1) return;
-        build(2*root, e+(d-e)/2, d);
-        build(2*root+1, e, e+(d-e)/2);
+        build(2*root, e, e+(d-e)/2);
+        build(2*root+1, e+(d-e)/2, d);
     }
 
     void refresh (int root) {
